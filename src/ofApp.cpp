@@ -10,8 +10,8 @@ void ofApp::setup(){
     
     guiFlight.setup();
     guiFlight.add(directionVar.setup("directionVariance", 180, 1, 360));
-    guiFlight.add(speedMin.setup("speedMin", 0.1, 1.0, 2));
-    guiFlight.add(speedMax.setup("speedMax", 2.0, 3, 10));
+    guiFlight.add(speedMin.setup("speedMin", 1.0, 0.1, 2));
+    guiFlight.add(speedMax.setup("speedMax", 2.0, 2, 10));
     guiFlight.add(waitTime.setup("waitTime", 2000.0, 100, 10000));
     
     // choose initial conditions
