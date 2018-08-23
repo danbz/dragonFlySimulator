@@ -26,11 +26,10 @@ class ofApp : public ofBaseApp{
     
     ofxFloatSlider directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime;
     ofxPanel guiFlight ;
-    float flyWidth, flyLength, currentWaitTime, currentSpeed, currentHeading, currentDistance;
+    float flyWidth, flyLength, currentWaitTime, currentSpeed, currentHeading;
     bool b_drawGui;
     ofVec2f currentLoc, currentVec;
     
-    int worldWidth, worldHeight;
-    
+    int worldWidth, worldHeight;    
     
 };
