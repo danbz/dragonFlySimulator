@@ -3,8 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
-    flyWidth = 5.0;
-    flyLength = 30.0;
+    flyWidth = 3.0;
+    flyLength = 20.0;
     worldWidth =   ofGetScreenWidth();
     worldHeight= ofGetScreenHeight();
     
@@ -27,6 +27,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    ofVec2f v1(0, 1);
     
     if (ofGetSystemTimeMillis() > currentWaitTime) {
         dragonFlyDecision();
@@ -34,12 +35,16 @@ void ofApp::update(){
     
     if (currentLoc.x < 0 && currentVec.x <0) {
         currentVec.x +=  2* abs(currentVec.x);
+        currentHeading = v1.angle(currentVec);
     } else if (currentLoc.x > worldWidth && currentVec.x > 0){
         currentVec.x -=  2* abs(currentVec.x);
+        currentHeading = v1.angle(currentVec);
     } else if (currentLoc.y <0 && currentVec.y <0) {
         currentVec.y += 2* abs(currentVec.y);
+        currentHeading = v1.angle(currentVec);
     } else if (currentLoc.y >worldHeight && currentVec.y >0){
         currentVec.y -= 2* abs(currentVec.y);
+        currentHeading = v1.angle(currentVec);
     }
     
     currentLoc += currentVec*currentSpeed;
@@ -47,7 +52,6 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    //yellowish draw colour
     
     ofPushMatrix();
     ofTranslate(currentLoc);
@@ -56,16 +60,13 @@ void ofApp::draw(){
     ofDrawRectangle(0,0, flyWidth, flyLength); // draw dragonfly body
     ofSetColor(173,255,47);
     ofDrawCircle(flyWidth/2, flyLength, flyWidth); // draw dragonfly head
-    
     ofPopMatrix();
     
     if (b_drawGui){
         stringstream flyStatus;
-        
         flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
         ofDrawBitmapString(flyStatus.str(), 20,  20);
         guiFlight.draw();
-        
     }
 }
 
