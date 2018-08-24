@@ -31,5 +31,6 @@ class ofApp : public ofBaseApp{
     ofVec2f currentLoc, currentVec;
     
     int worldWidth, worldHeight;    
+    ofEasyCam cam;
     
 };

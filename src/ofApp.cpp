@@ -4,8 +4,8 @@
 void ofApp::setup(){
     
     // define dragonfly size and world size
-    flyWidth = 3.0;
-    flyLength = 20.0;
+    flyWidth = 10.0;
+    flyLength = 50.0;
     worldWidth =   ofGetScreenWidth();
     worldHeight= ofGetScreenHeight();
     
@@ -25,6 +25,7 @@ void ofApp::setup(){
     ofSetBackgroundColor(0);
     
     b_drawGui = true;
+    
 }
 
 //--------------------------------------------------------------
@@ -55,6 +56,10 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    ofEnableDepthTest();
+    cam.begin();
+    ofDrawAxis(100);
+   // ofDrawRotationAxes(100);
     ofPushMatrix();
     ofTranslate(currentLoc);
     ofRotateZDeg(currentHeading);
@@ -63,6 +68,10 @@ void ofApp::draw(){
     ofSetColor(173,255,47);
     ofDrawCircle(flyWidth/2, flyLength, flyWidth); // draw dragonfly head
     ofPopMatrix();
+    ofDisableDepthTest();
+    
+    cam.end();
+    
     
     if (b_drawGui){
         stringstream flyStatus;
@@ -70,6 +79,9 @@ void ofApp::draw(){
         ofDrawBitmapString(flyStatus.str(), 20,  20);
         guiFlight.draw();
     }
+    
+    
+    
 }
 
 //--------------------------------------------------------------
