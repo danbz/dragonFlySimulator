@@ -1,4 +1,4 @@
-# dragonFlySimulator
+# dragonFlySimulator 3D branch
 dragonFlySimulator initial version of simulating dragonFly flight characteristics
 
 written in c++ openframeworks - based upon simple dragonfly observations at Shimoda Beach, Izu, Japan
