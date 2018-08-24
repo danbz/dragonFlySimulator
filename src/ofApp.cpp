@@ -3,11 +3,13 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    // define dragonfly size and world size
     flyWidth = 3.0;
     flyLength = 20.0;
     worldWidth =   ofGetScreenWidth();
     worldHeight= ofGetScreenHeight();
     
+    // set up gui and sliders
     guiFlight.setup();
     guiFlight.add(directionVar.setup("directionVariance", 180, 1, 360));
     guiFlight.add(speedMin.setup("speedMin", 1.0, 0.1, 2));
@@ -72,7 +74,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::dragonFlyDecision(){
-    // choose new direction, speed, distance and waittime
+    // choose new direction, speed and waittime
     currentHeading = currentHeading +  ofRandom(directionVar) - (directionVar/2);
     currentSpeed = ofRandom(speedMin, speedMax);
     currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
@@ -80,7 +82,6 @@ void ofApp::dragonFlyDecision(){
     //generate vector from heading
     ofVec2f v1(0, 1);
     currentVec = v1.getRotated(currentHeading); //
-    //cout << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << " speed: " << currentSpeed << " wait: " << currentWaitTime << endl;
 }
 
 //--------------------------------------------------------------
@@ -104,7 +105,7 @@ void ofApp::keyReleased(int key){
             worldHeight =  ofGetScreenHeight();
             break;
             
-        case ' ': //reset location
+        case ' ': // reset location
             currentLoc = ofVec2f(worldWidth/2,worldHeight/2);
             break;
     }
