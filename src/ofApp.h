@@ -24,13 +24,13 @@ class ofApp : public ofBaseApp{
     
     void dragonFlyDecision();
     
-    ofxFloatSlider directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime;
+    ofxFloatSlider directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
     ofxPanel guiFlight ;
     float flyWidth, flyLength, currentWaitTime, currentSpeed, currentHeading;
     bool b_drawGui;
     ofVec2f currentLoc, currentVec;
     
-    int worldWidth, worldHeight;    
+    int worldX, worldY, worldZ;    
     ofEasyCam cam;
-    
+    ofBoxPrimitive worldBox, flyBody;
 };
