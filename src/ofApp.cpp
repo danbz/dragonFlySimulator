@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     // define dragonfly size and world size
     flyWidth = 10.0;
-    flyLength = 50.0;
+    flyLength = 70.0;
     //worldWidth =   ofGetScreenWidth(); //useful only for 2d rendering
     //worldHeight = ofGetScreenHeight();
     
@@ -19,6 +19,11 @@ void ofApp::setup(){
     
     worldBox.set(worldX, worldY, worldZ); //setup wiredframe world edges
     worldBox.setResolution(1);
+    
+    worldFloor.set(worldX, worldZ); //setup wiredframe world edges
+    worldFloor.setResolution(10,10);
+    worldFloor.rotateDeg(90, 1, 0, 0);
+    worldFloor.setPosition(0, -worldY/2.0, 0);
     
     flyBody.set(flyWidth, flyWidth, flyLength); // 3d shape for flybody
     flyBody.setResolution(1);
@@ -42,6 +47,12 @@ void ofApp::setup(){
     b_drawGui = true;
     cam.setPosition(500, 100, -100);
     
+    ofSetSmoothLighting(true);
+    worldLight.setDiffuseColor( ofFloatColor(.85, .85, .55) );
+    worldLight.setSpecularColor( ofFloatColor(1.f, 1.f, 1.f));
+    worldLight.setPosition(50,50,50);
+    worldLight.setPointLight();
+     worldLight.setAreaLight(1000, 1000);
 }
 
 //--------------------------------------------------------------
@@ -72,29 +83,25 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
-    ofEnableDepthTest();
     cam.begin();
-    // ofDrawAxis(100);
-    // draw boundaries of visible/navigable flight area world.
+    ofEnableDepthTest();
+    ofEnableLighting();
+    worldLight.enable();
    
-    //ofPushMatrix();
+    // draw boundaries of visible/navigable flight area world
     
-    //worldBox.setPosition(worldWidth/2.0, , );
-    ofSetColor(55,55,55);
+    ofSetColor(200,200,200);
     worldBox.drawWireframe();
-    
-    flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2.0);
+    ofSetColor(65,65,65);
+    worldFloor.draw();
+    flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
     ofSetColor(173,255,47);
-    flyBody.drawWireframe();
-    
-//    ofTranslate(currentLoc);
-//    ofRotateZDeg(currentHeading);
+    flyBody.draw();
+
 //    ofSetColor(128,128,0);
-//    ofDrawRectangle(0,0, flyWidth, flyLength); // draw dragonfly body
 //    ofSetColor(173,255,47);
-//    ofDrawCircle(flyWidth/2, flyLength, flyWidth); // draw dragonfly head
-//    //ofPopMatrix();
+//worldLight.draw();
+    ofDisableLighting();
     ofDisableDepthTest();
     
     cam.end();
