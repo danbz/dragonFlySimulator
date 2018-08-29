@@ -33,6 +33,7 @@ class ofApp : public ofBaseApp{
     int worldX, worldY, worldZ;    
     ofEasyCam cam;
     ofBoxPrimitive worldBox, flyBody;
+    ofSpherePrimitive flyHead;
     ofPlanePrimitive worldFloor;
     ofLight worldLight;
 };

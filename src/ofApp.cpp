@@ -28,6 +28,9 @@ void ofApp::setup(){
     flyBody.set(flyWidth, flyWidth, flyLength); // 3d shape for flybody
     flyBody.setResolution(1);
     flyBody.rotateDeg(90, 0, 0, 1);
+    flyHead.set(1.2*flyWidth, 6);
+    flyHead.setPosition(0,0, flyLength/2 );
+    flyHead.setParent(flyBody);
     // set up gui and sliders
     guiFlight.setup();
     guiFlight.add(directionVar.setup("directionVariance", 180, 1, 360));
@@ -52,7 +55,7 @@ void ofApp::setup(){
     worldLight.setSpecularColor( ofFloatColor(1.f, 1.f, 1.f));
     worldLight.setPosition(50,50,50);
     worldLight.setPointLight();
-     worldLight.setAreaLight(1000, 1000);
+    worldLight.setAreaLight(1000, 1000);
 }
 
 //--------------------------------------------------------------
@@ -87,20 +90,23 @@ void ofApp::draw(){
     ofEnableDepthTest();
     ofEnableLighting();
     worldLight.enable();
-   
+    
     // draw boundaries of visible/navigable flight area world
     
     ofSetColor(200,200,200);
     worldBox.drawWireframe();
     ofSetColor(65,65,65);
     worldFloor.draw();
-    flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+   flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+   // flyHead.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
     ofSetColor(173,255,47);
     flyBody.draw();
-
-//    ofSetColor(128,128,0);
-//    ofSetColor(173,255,47);
-//worldLight.draw();
+    ofSetColor(128,128,0);
+    flyHead.draw();
+    
+    // ofSetColor(128,128,0); 
+    // ofSetColor(173,255,47);
+    // worldLight.draw();
     ofDisableLighting();
     ofDisableDepthTest();
     
@@ -112,7 +118,7 @@ void ofApp::draw(){
         ofDrawBitmapString(flyStatus.str(), 20,  20);
         guiFlight.draw();
     }
-
+    
 }
 
 //--------------------------------------------------------------
@@ -127,7 +133,7 @@ void ofApp::dragonFlyDecision(){
     currentVec = v1.getRotated(currentHeading); //
     flyBody.resetTransform();
     flyBody.rotateDeg(-currentHeading, 0, 1 , 0);
-
+    
 }
 
 //--------------------------------------------------------------
@@ -147,8 +153,8 @@ void ofApp::keyReleased(int key){
         case 'f':
         case 'F':
             ofToggleFullscreen();
-//            worldX =  ofGetScreenWidth();
-//            worldY =  ofGetScreenHeight();
+            //            worldX =  ofGetScreenWidth();
+            //            worldY =  ofGetScreenHeight();
             break;
             
         case ' ': // reset location
