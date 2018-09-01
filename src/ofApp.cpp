@@ -7,7 +7,7 @@ void ofApp::setup(){
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
     
-    int numOfFlies = 2000;
+    int numOfFlies = 1000;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -95,14 +95,15 @@ dragonFly::dragonFly(){
     //fly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 20.0;
+    head.setParent(body);
     body.set(width, width, length); // 3d shape for flybody
     body.setResolution(1);
     body.rotateDeg(90, 0, 0, 1);
-    head.setParent(body);
     head.set(1.2*width, 6);
     head.setPosition(0,0, length/2 );
-    headColor = ofColor((ofRandom(50)+100),(ofRandom(50)+100),0);
-    bodyColor = ofColor((ofRandom(75)+100),(ofRandom(50)+205),47);
+    
+    headColor = ofColor((ofRandom(100)+50),(ofRandom(50)+100),0);
+    bodyColor = ofColor((ofRandom(75)+100),(ofRandom(155)+100),47);
     // choose initial flight conditions
     directionVar =  180;
     speedMin = 0.1;
@@ -145,9 +146,13 @@ void dragonFly::update(){
         currentVec.y -= 2* abs(currentVec.y);
         currentHeading = v1.angle(currentVec);
     }
+    currentLoc += currentVec*currentSpeed;
+    head.setParent(body);
     body.resetTransform();
     body.rotateDeg(-currentHeading, 0, 1 , 0);
-    currentLoc += currentVec*currentSpeed;
+    // body.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+   // head.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
 }
 
 //--------------------------------------------------------------
@@ -164,15 +169,14 @@ void dragonFly::decision(){
     body.rotateDeg(-currentHeading, 0, 1 , 0);
     
 }
+
 //--------------------------------------------------------------
 
 void dragonFly::draw(){
-    body.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
-    //head.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
     ofSetColor(bodyColor);
-    body.drawWireframe();
+    body.draw();
     ofSetColor(headColor);
-    //head.drawWireframe();
+    head.draw();
 }
 
 void dragonFly::reset(){
