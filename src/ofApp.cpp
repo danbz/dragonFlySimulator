@@ -7,9 +7,10 @@ void ofApp::setup(){
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
     
-    worldX =2000;
-    worldY=500;
-    worldZ=2000;
+    int numOfFlies = 100;
+    worldX = 2000;
+    worldY = 500;
+    worldZ = 2000;
     worldBox.set(worldX, worldY, worldZ); //setup wiredframe world edges
     worldBox.setResolution(1);
     worldFloor.set(worldX, worldZ); //setup wiredframe world edges
@@ -17,29 +18,6 @@ void ofApp::setup(){
     worldFloor.rotateDeg(90, 1, 0, 0);
     worldFloor.setPosition(0, -worldY/2.0, 0);
     
-    // define dragonfly size and world size
-    fly1.flyWidth = 10.0;
-    fly1.flyLength = 70.0;
-    fly1.worldX =   worldX; // set 3d world render size
-    fly1.worldY = worldY;
-    fly1.worldZ = worldZ;
-    fly1.flyBody.set(fly1.flyWidth, fly1.flyWidth, fly1.flyLength); // 3d shape for flybody
-    fly1.flyBody.setResolution(1);
-    fly1.flyBody.rotateDeg(90, 0, 0, 1);
-    fly1.flyHead.set(1.2*fly1.flyWidth, 6);
-    fly1.flyHead.setPosition(0,0, fly1.flyLength/2 );
-    fly1.flyHead.setParent(fly1.flyBody);
-    // choose initial conditions
-    fly1.directionVar =  180;
-    fly1.speedMin = 0.1;
-    fly1.speedMax = 10.0;
-    fly1.waitTime = 500.0;
-    fly1.currentAltitude = 50.0;
-    fly1.currentHeading = ofRandom(360.0);
-    fly1.currentSpeed = ofRandom(fly1.speedMin, fly1.speedMax);
-    fly1.currentWaitTime = ofGetSystemTimeMillis() + ofRandom(fly1.waitTime);
-    fly1.currentLoc = ofVec2f(worldX/2,worldZ/2);
-    fly1.currentVec = ofVec2f(0,0);
     
     // set up gui and sliders
     //    guiFlight.setup();
@@ -60,32 +38,18 @@ void ofApp::setup(){
     worldLight.setPosition(50,50,50);
     worldLight.setPointLight();
     worldLight.setAreaLight(1000, 1000);
+    
+    for (int i = 0 ; i < numOfFlies ; i++ ){
+        dragonFly newfly;
+        flies.push_back(newfly);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
-    fly1.update();
-//    if (ofGetSystemTimeMillis() > fly1.currentWaitTime) {
-//        dragonFlyDecision();
-//    }
-//
-//    if (currentLoc.x < 0 && currentVec.x <0) {
-//        currentVec.x +=  2* abs(currentVec.x);
-//        currentHeading = v1.angle(currentVec);
-//    } else if (currentLoc.x > worldX && currentVec.x > 0){
-//        currentVec.x -=  2* abs(currentVec.x);
-//        currentHeading = v1.angle(currentVec);
-//    } else if (currentLoc.y <0 && currentVec.y <0) {
-//        currentVec.y += 2* abs(currentVec.y);
-//        currentHeading = v1.angle(currentVec);
-//    } else if (currentLoc.y >worldZ && currentVec.y >0){
-//        currentVec.y -= 2* abs(currentVec.y);
-//        currentHeading = v1.angle(currentVec);
-//    }
-//    flyBody.resetTransform();
-//    flyBody.rotateDeg(-currentHeading, 0, 1 , 0);
-//    currentLoc += currentVec*currentSpeed;
+    for (int i = 0 ; i < flies.size() ; i++){
+        flies[i].update();
+    }
 }
 
 //--------------------------------------------------------------
@@ -101,10 +65,11 @@ void ofApp::draw(){
     worldBox.drawWireframe();
     ofSetColor(65,65,65);
     worldFloor.draw();
-    fly1.draw();
     
-    // ofSetColor(128,128,0); 
-    // ofSetColor(173,255,47);
+    for (int i = 0 ; i < flies.size() ; i++){
+        flies[i].draw();
+    }
+    
     // worldLight.draw();
     ofDisableLighting();
     ofDisableDepthTest();
@@ -115,10 +80,50 @@ void ofApp::draw(){
         stringstream flyStatus;
         //flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
         ofDrawBitmapString(flyStatus.str(), 20,  20);
-       // guiFlight.draw();
+        // guiFlight.draw();
     }
     
 }
+//--------------------------------------------------------------
+dragonFly::dragonFly(){
+    // dragonFly constructor
+    
+    worldX = 2000; // set individual fly 3d world  size
+    worldY = 500;
+    worldZ = 2000;
+    
+    //fly characteristics
+    width = ofRandom(5) + 5.0;
+    length = ofRandom(20)+ 50.0;
+    body.set(width, width, length); // 3d shape for flybody
+    body.setResolution(1);
+    body.rotateDeg(90, 0, 0, 1);
+    head.setParent(body);
+    head.set(1.2*width, 6);
+    head.setPosition(0,0, length/2 );
+    headColor = ofColor(128,128,0);
+    bodyColor = ofColor(173,255,47);
+    // choose initial flight conditions
+    directionVar =  180;
+    speedMin = 0.1;
+    speedMax = 10.0;
+    waitTime = 500.0;
+    currentAltitude = ofRandom(0.0+worldY);
+    currentHeading = ofRandom(360.0);
+    currentSpeed = ofRandom(speedMin, speedMax);
+    currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
+    currentLoc = ofVec2f(worldX/2,worldZ/2);
+    currentVec = ofVec2f(0,0);
+    cout << "constructing dragonfly" << endl;
+
+}
+
+//--------------------------------------------------------------
+
+dragonFly::~dragonFly(){
+    cout << "destructing dragonfly" << endl;
+}
+
 //--------------------------------------------------------------
 
 void dragonFly::update(){
@@ -140,8 +145,8 @@ void dragonFly::update(){
         currentVec.y -= 2* abs(currentVec.y);
         currentHeading = v1.angle(currentVec);
     }
-    flyBody.resetTransform();
-    flyBody.rotateDeg(-currentHeading, 0, 1 , 0);
+    body.resetTransform();
+    body.rotateDeg(-currentHeading, 0, 1 , 0);
     currentLoc += currentVec*currentSpeed;
 }
 
@@ -155,18 +160,19 @@ void dragonFly::decision(){
     //generate vector from heading
     ofVec2f v1(0, 1);
     currentVec = v1.getRotated(currentHeading); //
-    flyBody.resetTransform();
-    flyBody.rotateDeg(-currentHeading, 0, 1 , 0);
+    body.resetTransform();
+    body.rotateDeg(-currentHeading, 0, 1 , 0);
     
 }
+//--------------------------------------------------------------
 
 void dragonFly::draw(){
-    flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
-    // flyHead.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
-    ofSetColor(173,255,47);
-    flyBody.draw();
-    ofSetColor(128,128,0);
-    flyHead.draw();
+    body.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    //head.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    ofSetColor(bodyColor);
+    body.draw();
+    ofSetColor(headColor);
+    head.draw();
 }
 
 void dragonFly::reset(){
@@ -195,7 +201,9 @@ void ofApp::keyReleased(int key){
             break;
             
         case ' ': // reset location
-            fly1.reset();
+            for (int i = 0 ; i < flies.size() ; i++){
+                flies[i].reset();
+            }
             break;
     }
 }

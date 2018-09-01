@@ -6,16 +6,21 @@
 class dragonFly {
     
 public:
-    float flyWidth, flyLength, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
+    float width, length, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
     ofVec2f currentLoc, currentVec;
-    ofSpherePrimitive flyHead;
-    ofBoxPrimitive flyBody;
+    ofSpherePrimitive head;
+    ofBoxPrimitive body;
+    ofColor headColor, bodyColor;
     int worldX, worldY, worldZ;
+    
+    dragonFly(); // dragonFly constructor
+    ~dragonFly(); //dragonFly destructor
     
     void decision();
     void update();
     void draw();
     void reset();
+    
 };
 
 class ofApp : public ofBaseApp{
@@ -48,5 +53,7 @@ class ofApp : public ofBaseApp{
     ofBoxPrimitive worldBox;
     ofPlanePrimitive worldFloor;
     ofLight worldLight;
-    dragonFly fly1;
+    //dragonFly fly1, fly2;
+    
+    vector<dragonFly> flies;
 };
