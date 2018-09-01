@@ -7,46 +7,50 @@ void ofApp::setup(){
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
     
-    // define dragonfly size and world size
-    flyWidth = 10.0;
-    flyLength = 70.0;
-    //worldWidth =   ofGetScreenWidth(); //useful only for 2d rendering
-    //worldHeight = ofGetScreenHeight();
-    
-    worldX =   2000; // set 3d world render size
-    worldZ = 2000;
-    worldY = 500;
-    
+    worldX =2000;
+    worldY=500;
+    worldZ=2000;
     worldBox.set(worldX, worldY, worldZ); //setup wiredframe world edges
     worldBox.setResolution(1);
-    
     worldFloor.set(worldX, worldZ); //setup wiredframe world edges
     worldFloor.setResolution(10,10);
     worldFloor.rotateDeg(90, 1, 0, 0);
     worldFloor.setPosition(0, -worldY/2.0, 0);
     
-    flyBody.set(flyWidth, flyWidth, flyLength); // 3d shape for flybody
-    flyBody.setResolution(1);
-    flyBody.rotateDeg(90, 0, 0, 1);
-    flyHead.set(1.2*flyWidth, 6);
-    flyHead.setPosition(0,0, flyLength/2 );
-    flyHead.setParent(flyBody);
-    // set up gui and sliders
-    guiFlight.setup();
-    guiFlight.add(directionVar.setup("directionVariance", 180, 1, 360));
-    guiFlight.add(speedMin.setup("speedMin", 1.0, 0.1, 2));
-    guiFlight.add(speedMax.setup("speedMax", 4.0, 2, 20));
-    guiFlight.add(waitTime.setup("waitTime", 2000.0, 100, 10000));
-    guiFlight.add(currentAltitude.setup("altitude", 10.0, 0, 500));
-    
+    // define dragonfly size and world size
+    fly1.flyWidth = 10.0;
+    fly1.flyLength = 70.0;
+    fly1.worldX =   worldX; // set 3d world render size
+    fly1.worldY = worldY;
+    fly1.worldZ = worldZ;
+    fly1.flyBody.set(fly1.flyWidth, fly1.flyWidth, fly1.flyLength); // 3d shape for flybody
+    fly1.flyBody.setResolution(1);
+    fly1.flyBody.rotateDeg(90, 0, 0, 1);
+    fly1.flyHead.set(1.2*fly1.flyWidth, 6);
+    fly1.flyHead.setPosition(0,0, fly1.flyLength/2 );
+    fly1.flyHead.setParent(fly1.flyBody);
     // choose initial conditions
-    currentHeading = ofRandom(360.0);
-    currentSpeed = ofRandom(speedMin, speedMax);
-    currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
-    currentLoc = ofVec2f(worldX/2,worldZ/2);
-    currentVec = ofVec2f(0,0);
-    ofSetBackgroundColor(0);
+    fly1.directionVar =  180;
+    fly1.speedMin = 0.1;
+    fly1.speedMax = 10.0;
+    fly1.waitTime = 500.0;
+    fly1.currentAltitude = 50.0;
+    fly1.currentHeading = ofRandom(360.0);
+    fly1.currentSpeed = ofRandom(fly1.speedMin, fly1.speedMax);
+    fly1.currentWaitTime = ofGetSystemTimeMillis() + ofRandom(fly1.waitTime);
+    fly1.currentLoc = ofVec2f(worldX/2,worldZ/2);
+    fly1.currentVec = ofVec2f(0,0);
     
+    // set up gui and sliders
+    //    guiFlight.setup();
+    //    guiFlight.add(directionVar.setup("directionVariance", 180, 1, 360));
+    //    guiFlight.add(speedMin.setup("speedMin", 1.0, 0.1, 2));
+    //    guiFlight.add(speedMax.setup("speedMax", 4.0, 2, 20));
+    //    guiFlight.add(waitTime.setup("waitTime", 2000.0, 100, 10000));
+    //    guiFlight.add(currentAltitude.setup("altitude", 10.0, 0, 500));
+    
+    
+    ofSetBackgroundColor(0);
     b_drawGui = true;
     cam.setPosition(500, 100, -100);
     
@@ -60,10 +64,67 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    ofVec2f v1(0, 1); // constant for heading angle and vector calulations
     
+    fly1.update();
+//    if (ofGetSystemTimeMillis() > fly1.currentWaitTime) {
+//        dragonFlyDecision();
+//    }
+//
+//    if (currentLoc.x < 0 && currentVec.x <0) {
+//        currentVec.x +=  2* abs(currentVec.x);
+//        currentHeading = v1.angle(currentVec);
+//    } else if (currentLoc.x > worldX && currentVec.x > 0){
+//        currentVec.x -=  2* abs(currentVec.x);
+//        currentHeading = v1.angle(currentVec);
+//    } else if (currentLoc.y <0 && currentVec.y <0) {
+//        currentVec.y += 2* abs(currentVec.y);
+//        currentHeading = v1.angle(currentVec);
+//    } else if (currentLoc.y >worldZ && currentVec.y >0){
+//        currentVec.y -= 2* abs(currentVec.y);
+//        currentHeading = v1.angle(currentVec);
+//    }
+//    flyBody.resetTransform();
+//    flyBody.rotateDeg(-currentHeading, 0, 1 , 0);
+//    currentLoc += currentVec*currentSpeed;
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+    cam.begin();
+    ofEnableDepthTest();
+    ofEnableLighting();
+    worldLight.enable();
+    
+    // draw boundaries of visible/navigable flight area world
+    
+    ofSetColor(200,200,200);
+    worldBox.drawWireframe();
+    ofSetColor(65,65,65);
+    worldFloor.draw();
+    fly1.draw();
+    
+    // ofSetColor(128,128,0); 
+    // ofSetColor(173,255,47);
+    // worldLight.draw();
+    ofDisableLighting();
+    ofDisableDepthTest();
+    
+    cam.end();
+    
+    if (b_drawGui){
+        stringstream flyStatus;
+        //flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
+        ofDrawBitmapString(flyStatus.str(), 20,  20);
+       // guiFlight.draw();
+    }
+    
+}
+//--------------------------------------------------------------
+
+void dragonFly::update(){
+    ofVec2f v1(0, 1); // constant for heading angle and vector calulations
     if (ofGetSystemTimeMillis() > currentWaitTime) {
-        dragonFlyDecision();
+        decision();
     }
     
     if (currentLoc.x < 0 && currentVec.x <0) {
@@ -85,44 +146,7 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-    cam.begin();
-    ofEnableDepthTest();
-    ofEnableLighting();
-    worldLight.enable();
-    
-    // draw boundaries of visible/navigable flight area world
-    
-    ofSetColor(200,200,200);
-    worldBox.drawWireframe();
-    ofSetColor(65,65,65);
-    worldFloor.draw();
-   flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
-   // flyHead.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
-    ofSetColor(173,255,47);
-    flyBody.draw();
-    ofSetColor(128,128,0);
-    flyHead.draw();
-    
-    // ofSetColor(128,128,0); 
-    // ofSetColor(173,255,47);
-    // worldLight.draw();
-    ofDisableLighting();
-    ofDisableDepthTest();
-    
-    cam.end();
-    
-    if (b_drawGui){
-        stringstream flyStatus;
-        flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
-        ofDrawBitmapString(flyStatus.str(), 20,  20);
-        guiFlight.draw();
-    }
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::dragonFlyDecision(){
+void dragonFly::decision(){
     // choose new direction, speed and waittime
     currentHeading = currentHeading +  ofRandom(directionVar) - (directionVar/2);
     currentSpeed = ofRandom(speedMin, speedMax);
@@ -134,6 +158,19 @@ void ofApp::dragonFlyDecision(){
     flyBody.resetTransform();
     flyBody.rotateDeg(-currentHeading, 0, 1 , 0);
     
+}
+
+void dragonFly::draw(){
+    flyBody.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    // flyHead.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    ofSetColor(173,255,47);
+    flyBody.draw();
+    ofSetColor(128,128,0);
+    flyHead.draw();
+}
+
+void dragonFly::reset(){
+    currentLoc = ofVec2f(worldX/2,worldZ/2);
 }
 
 //--------------------------------------------------------------
@@ -158,7 +195,7 @@ void ofApp::keyReleased(int key){
             break;
             
         case ' ': // reset location
-            currentLoc = ofVec2f(worldX/2,worldZ/2);
+            fly1.reset();
             break;
     }
 }
