@@ -7,10 +7,10 @@ void ofApp::setup(){
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
     
-    int numOfFlies = 100;
-    worldX = 2000;
-    worldY = 500;
-    worldZ = 2000;
+    int numOfFlies = 2000;
+    worldX = 4000;
+    worldY = 1000;
+    worldZ = 4000;
     worldBox.set(worldX, worldY, worldZ); //setup wiredframe world edges
     worldBox.setResolution(1);
     worldFloor.set(worldX, worldZ); //setup wiredframe world edges
@@ -88,21 +88,21 @@ void ofApp::draw(){
 dragonFly::dragonFly(){
     // dragonFly constructor
     
-    worldX = 2000; // set individual fly 3d world  size
-    worldY = 500;
-    worldZ = 2000;
+    worldX = 4000; // set individual fly 3d world  size
+    worldY = 1000;
+    worldZ = 4000;
     
     //fly characteristics
-    width = ofRandom(5) + 5.0;
-    length = ofRandom(20)+ 50.0;
+    width = ofRandom(8) + 3.0;
+    length = ofRandom(50)+ 20.0;
     body.set(width, width, length); // 3d shape for flybody
     body.setResolution(1);
     body.rotateDeg(90, 0, 0, 1);
     head.setParent(body);
     head.set(1.2*width, 6);
     head.setPosition(0,0, length/2 );
-    headColor = ofColor(128,128,0);
-    bodyColor = ofColor(173,255,47);
+    headColor = ofColor((ofRandom(50)+100),(ofRandom(50)+100),0);
+    bodyColor = ofColor((ofRandom(75)+100),(ofRandom(50)+205),47);
     // choose initial flight conditions
     directionVar =  180;
     speedMin = 0.1;
@@ -170,9 +170,9 @@ void dragonFly::draw(){
     body.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
     //head.setPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
     ofSetColor(bodyColor);
-    body.draw();
+    body.drawWireframe();
     ofSetColor(headColor);
-    head.draw();
+    //head.drawWireframe();
 }
 
 void dragonFly::reset(){
