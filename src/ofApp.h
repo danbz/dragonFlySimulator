@@ -3,8 +3,28 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 
-class ofApp : public ofBaseApp{
+class dragonFly {
+    
+public:
+    float width, length, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
+    ofVec2f currentLoc, currentVec;
+    ofSpherePrimitive head;
+    ofConePrimitive body;
+    ofColor headColor, bodyColor;
+    int worldX, worldY, worldZ;
+    
+    dragonFly(); // dragonFly constructor
+    ~dragonFly(); //dragonFly destructor
+    
+    void decision();
+    void update();
+    void draw();
+    void reset();
+    
+};
 
+class ofApp : public ofBaseApp{
+    
 	public:
 		void setup();
 		void update();
@@ -22,14 +42,18 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    void dragonFlyDecision();
     
-    ofxFloatSlider directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime;
+    //ofxFloatSlider directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
     ofxPanel guiFlight ;
-    float flyWidth, flyLength, currentWaitTime, currentSpeed, currentHeading;
+   
     bool b_drawGui;
-    ofVec2f currentLoc, currentVec;
+    int worldX, worldY, worldZ;
+
+    ofEasyCam cam;
+    ofBoxPrimitive worldBox;
+    ofPlanePrimitive worldFloor;
+    ofLight worldLight;
+    //dragonFly fly1, fly2;
     
-    int worldWidth, worldHeight;    
-    
+    vector<dragonFly> flies;
 };
