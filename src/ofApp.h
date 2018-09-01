@@ -9,7 +9,7 @@ public:
     float width, length, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
     ofVec2f currentLoc, currentVec;
     ofSpherePrimitive head;
-    ofBoxPrimitive body;
+    ofConePrimitive body;
     ofColor headColor, bodyColor;
     int worldX, worldY, worldZ;
     
