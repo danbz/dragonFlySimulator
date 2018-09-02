@@ -7,7 +7,7 @@ void ofApp::setup(){
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
     
-    int numOfFlies = 500;
+    int numOfFlies = 5 00;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
