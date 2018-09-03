@@ -48,7 +48,7 @@ class ofApp : public ofBaseApp{
    
     bool b_drawGui;
     int worldX, worldY, worldZ;
-
+    
     ofEasyCam cam;
     ofBoxPrimitive worldBox;
     ofPlanePrimitive worldFloor;

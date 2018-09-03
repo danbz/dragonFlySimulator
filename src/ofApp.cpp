@@ -7,7 +7,7 @@ void ofApp::setup(){
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
     
-    int numOfFlies = 5 00;
+    int numOfFlies = 1000;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -17,7 +17,6 @@ void ofApp::setup(){
     worldFloor.setResolution(10,10);
     worldFloor.rotateDeg(90, 1, 0, 0);
     worldFloor.setPosition(0, -worldY/2.0, 0);
-    
     
     // set up gui and sliders
     //    guiFlight.setup();
@@ -63,7 +62,7 @@ void ofApp::draw(){
     
     ofSetColor(200,200,200);
     worldBox.drawWireframe();
-    ofSetColor(65,65,65);
+    ofSetColor(165,165,65);
     worldFloor.draw();
     
     for (int i = 0 ; i < flies.size() ; i++){
@@ -79,6 +78,7 @@ void ofApp::draw(){
     if (b_drawGui){
         stringstream flyStatus;
         //flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
+        flyStatus << flies.size() << " dragonflies " << ofGetFrameRate() << " fps" << endl;
         ofDrawBitmapString(flyStatus.str(), 20,  20);
         // guiFlight.draw();
     }
@@ -116,7 +116,7 @@ dragonFly::dragonFly(){
     currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
     currentLoc = ofVec2f(worldX/2,worldZ/2);
     currentVec = ofVec2f(0,0);
-    cout << "constructing dragonfly" << endl;
+    // cout << "constructing dragonfly" << endl;
 
 }
 
@@ -129,30 +129,41 @@ dragonFly::~dragonFly(){
 //--------------------------------------------------------------
 
 void dragonFly::update(){
+    
+    bool b_metEdge = false;
     ofVec2f v1(0, 1); // constant for heading angle and vector calulations
+    
     if (ofGetSystemTimeMillis() > currentWaitTime) {
         decision();
     }
+   
     
     if (currentLoc.x < 0 && currentVec.x <0) {
         currentVec.x +=  2* abs(currentVec.x);
         currentHeading = v1.angle(currentVec);
+        b_metEdge = true;
     } else if (currentLoc.x > worldX && currentVec.x > 0){
         currentVec.x -=  2* abs(currentVec.x);
         currentHeading = v1.angle(currentVec);
+        b_metEdge = true;
     } else if (currentLoc.y <0 && currentVec.y <0) {
         currentVec.y += 2* abs(currentVec.y);
         currentHeading = v1.angle(currentVec);
+        b_metEdge = true;
     } else if (currentLoc.y >worldZ && currentVec.y >0){
         currentVec.y -= 2* abs(currentVec.y);
         currentHeading = v1.angle(currentVec);
+        b_metEdge = true;
     }
+    
+    if (b_metEdge) {
+        //head.setParent(body);
+        body.resetTransform();
+        body.rotateDeg(90, 0, 0, 1);
+        body.rotateDeg(-currentHeading+90, 0, 1 , 0);
+    }
+    
     currentLoc += currentVec*currentSpeed;
-    head.setParent(body);
-    body.resetTransform();
-    body.rotateDeg(90, 0, 0, 1);
-
-    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
     body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
 }
 
@@ -166,8 +177,12 @@ void dragonFly::decision(){
     //generate vector from heading
     ofVec2f v1(0, 1);
     currentVec = v1.getRotated(currentHeading); //
+//    body.resetTransform();
+//    body.rotateDeg(-currentHeading, 0, 1 , 0);
+    
     body.resetTransform();
-    body.rotateDeg(-currentHeading, 0, 1 , 0);
+    body.rotateDeg(90, 0, 0, 1);
+    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
     
 }
 
@@ -176,8 +191,8 @@ void dragonFly::decision(){
 void dragonFly::draw(){
     ofSetColor(bodyColor);
     body.draw();
-    ofSetColor(headColor);
-    //head.draw();
+    // ofSetColor(headColor);
+    // head.draw();
 }
 
 void dragonFly::reset(){
