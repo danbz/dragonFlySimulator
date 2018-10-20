@@ -94,7 +94,7 @@ dragonFly::dragonFly(){
     worldY = 1000;
     worldZ = 4000;
     
-    // choose fly characteristics
+    // choose ffly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 40.0;
     // head.setParent(body);
