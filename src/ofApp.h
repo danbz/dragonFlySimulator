@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 
+
 class dragonFly {
     
 public:
@@ -12,6 +13,7 @@ public:
     ofConePrimitive body;
     ofColor headColor, bodyColor;
     int worldX, worldY, worldZ;
+    string name;
     
     dragonFly(); // dragonFly constructor
     ~dragonFly(); //dragonFly destructor
@@ -20,6 +22,8 @@ public:
     void update();
     void draw();
     void reset();
+    
+    ofTrueTypeFont      flyFont;
     
 };
 
@@ -56,4 +60,7 @@ class ofApp : public ofBaseApp{
     //dragonFly fly1, fly2;
     
     vector<dragonFly> flies;
+    ofTrueTypeFont      font;
+
+    string              flyNames;
 };

@@ -6,8 +6,8 @@ void ofApp::setup(){
     // august 2018 dan buzzo dan@buzzo.com www.buzzo.com
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz
-    
-    int numOfFlies = 500;
+    //experimental branch to swap 3d for text representations
+    int numOfFlies = 1000;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -17,16 +17,6 @@ void ofApp::setup(){
     worldFloor.setResolution(10,10);
     worldFloor.rotateDeg(90, 1, 0, 0);
     worldFloor.setPosition(0, -worldY/2.0, 0);
-    
-    
-    // set up gui and sliders
-    //    guiFlight.setup();
-    //    guiFlight.add(directionVar.setup("directionVariance", 180, 1, 360));
-    //    guiFlight.add(speedMin.setup("speedMin", 1.0, 0.1, 2));
-    //    guiFlight.add(speedMax.setup("speedMax", 4.0, 2, 20));
-    //    guiFlight.add(waitTime.setup("waitTime", 2000.0, 100, 10000));
-    //    guiFlight.add(currentAltitude.setup("altitude", 10.0, 0, 500));
-    
     
     ofSetBackgroundColor(0);
     b_drawGui = true;
@@ -43,6 +33,9 @@ void ofApp::setup(){
         dragonFly newfly;
         flies.push_back(newfly);
     }
+    
+    font.load("monospace", 18);
+    flyNames ="dragonFly";
 }
 
 //--------------------------------------------------------------
@@ -95,15 +88,15 @@ dragonFly::dragonFly(){
     //fly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 40.0;
-    head.setParent(body);
+   // head.setParent(body);
     body.set(width, length);
     // body.setResolution(1, 1, 1);
     // body.setResolution(1);
     // body.rotateDeg(90, 0, 0, 1);
-    head.set(1.2*width, 6);
-    head.setPosition(0,length/2, 0 );
+//    head.set(1.2*width, 6);
+//    head.setPosition(0,length/2, 0 );
     
-    headColor = ofColor((ofRandom(100)+50),(ofRandom(50)+100),0);
+//    headColor = ofColor((ofRandom(100)+50),(ofRandom(50)+100),0);
     bodyColor = ofColor((ofRandom(75)+100),(ofRandom(155)+100),47);
     // choose initial flight conditions
     directionVar =  180;
@@ -116,8 +109,9 @@ dragonFly::dragonFly(){
     currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
     currentLoc = ofVec2f(worldX/2,worldZ/2);
     currentVec = ofVec2f(0,0);
+    name = "dragonFly";
     cout << "constructing dragonfly" << endl;
-
+    flyFont.load("sans-serif", ofRandom(15)+10);
 }
 
 //--------------------------------------------------------------
@@ -148,12 +142,12 @@ void dragonFly::update(){
         currentHeading = v1.angle(currentVec);
     }
     currentLoc += currentVec*currentSpeed;
-    head.setParent(body);
-    body.resetTransform();
-    body.rotateDeg(90, 0, 0, 1);
-
-    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
-    body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+//    head.setParent(body);
+//    body.resetTransform();
+//    body.rotateDeg(90, 0, 0, 1);
+//
+//    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
+//    body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
 }
 
 //--------------------------------------------------------------
@@ -166,8 +160,8 @@ void dragonFly::decision(){
     //generate vector from heading
     ofVec2f v1(0, 1);
     currentVec = v1.getRotated(currentHeading); //
-    body.resetTransform();
-    body.rotateDeg(-currentHeading, 0, 1 , 0);
+//    body.resetTransform();
+//    body.rotateDeg(-currentHeading, 0, 1 , 0);
     
 }
 
@@ -175,10 +169,20 @@ void dragonFly::decision(){
 
 void dragonFly::draw(){
     ofSetColor(bodyColor);
-    body.draw();
-    ofSetColor(headColor);
-    //head.draw();
+   // body.draw();
+    
+    //ofSetColor(255,255,255);
+    ofPushMatrix();
+    ofTranslate(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2 );
+    ofRotateDeg(-currentHeading+90, 0, 1 , 0);
+  
+    float scl = 1;
+    glScalef(scl, scl, scl);
+    flyFont.drawString("dragonFly", 0, 0);
+    ofPopMatrix();
 }
+
+//--------------------------------------------------------------
 
 void dragonFly::reset(){
     currentLoc = ofVec2f(worldX/2,worldZ/2);
