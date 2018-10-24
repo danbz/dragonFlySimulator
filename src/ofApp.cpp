@@ -5,9 +5,11 @@ void ofApp::setup(){
     // dragon fly flight characteristics simulation
     // august 2018 dan buzzo dan@buzzo.com www.buzzo.com
     // flight charactre simulation in x,z plane with 3d viewport rendering
-    // github.com/danbz
-    //experimental branch to swap 3d for text representations
-    int numOfFlies = 1000;
+    // github.com/danbz   http://www.buzzo.com
+    //experimental branch to swap 3d for text representations October 2018
+    
+    
+    int numOfFlies = 170;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -29,13 +31,30 @@ void ofApp::setup(){
     worldLight.setPointLight();
     worldLight.setAreaLight(1000, 1000);
     
-    for (int i = 0 ; i < numOfFlies ; i++ ){
-        dragonFly newfly;
-        flies.push_back(newfly);
-    }
-    
     font.load("monospace", 18);
     flyNames ="dragonFly";
+    
+    // load fresh prince lyrics
+
+     sortTypeInfo = "no sort";
+    
+    ofBuffer buffer = ofBufferFromFile("freshprince.txt");
+    string   content = buffer.getText();
+    setupWords(content);
+   // cout << content << endl;
+    // create dragonfly swarm
+    cout << "words in wordlist " << words.size() << endl;
+    for (int i = 0 ; i < numOfFlies ; i++ ){
+        dragonFly newfly;
+        
+        if (i < words.size()) {
+            string newName = words[i].word; // set name to lyric
+        newfly.setName(newName);
+      } else {            newfly.name = "overloaded";
+      }
+        flies.push_back(newfly);
+       
+    }
 }
 
 //--------------------------------------------------------------
@@ -78,9 +97,7 @@ void ofApp::draw(){
     
 }
 //--------------------------------------------------------------
-dragonFly::dragonFly(){
-    // dragonFly constructor
-    
+dragonFly::dragonFly(){  // dragonFly constructor
     worldX = 4000; // set individual fly 3d world  size
     worldY = 1000;
     worldZ = 4000;
@@ -88,15 +105,12 @@ dragonFly::dragonFly(){
     //fly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 40.0;
-   // head.setParent(body);
+    // head.setParent(body);
     body.set(width, length);
     // body.setResolution(1, 1, 1);
     // body.setResolution(1);
     // body.rotateDeg(90, 0, 0, 1);
-//    head.set(1.2*width, 6);
-//    head.setPosition(0,length/2, 0 );
-    
-//    headColor = ofColor((ofRandom(100)+50),(ofRandom(50)+100),0);
+    // headColor = ofColor((ofRandom(100)+50),(ofRandom(50)+100),0);
     bodyColor = ofColor((ofRandom(75)+100),(ofRandom(155)+100),47);
     // choose initial flight conditions
     directionVar =  180;
@@ -109,9 +123,14 @@ dragonFly::dragonFly(){
     currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
     currentLoc = ofVec2f(worldX/2,worldZ/2);
     currentVec = ofVec2f(0,0);
-    name = "dragonFly";
+    name = "dragonFly"; // default dragonfly name
     cout << "constructing dragonfly" << endl;
-    flyFont.load("sans-serif", ofRandom(15)+10);
+    
+    // set type parameters
+    
+    flyFont.load( "sans-serif", ofRandom(15)+10, true, false, false, 0.3f, 192 );
+    // flyFont.load( "sans-serif", ofRandom(15)+10 );
+    
 }
 
 //--------------------------------------------------------------
@@ -142,12 +161,12 @@ void dragonFly::update(){
         currentHeading = v1.angle(currentVec);
     }
     currentLoc += currentVec*currentSpeed;
-//    head.setParent(body);
-//    body.resetTransform();
-//    body.rotateDeg(90, 0, 0, 1);
-//
-//    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
-//    body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    //    head.setParent(body);
+    //    body.resetTransform();
+    //    body.rotateDeg(90, 0, 0, 1);
+    //
+    //    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
+    //    body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
 }
 
 //--------------------------------------------------------------
@@ -160,8 +179,8 @@ void dragonFly::decision(){
     //generate vector from heading
     ofVec2f v1(0, 1);
     currentVec = v1.getRotated(currentHeading); //
-//    body.resetTransform();
-//    body.rotateDeg(-currentHeading, 0, 1 , 0);
+    //    body.resetTransform();
+    //    body.rotateDeg(-currentHeading, 0, 1 , 0);
     
 }
 
@@ -169,16 +188,16 @@ void dragonFly::decision(){
 
 void dragonFly::draw(){
     ofSetColor(bodyColor);
-   // body.draw();
+    // body.draw();
     
     //ofSetColor(255,255,255);
     ofPushMatrix();
     ofTranslate(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2 );
     ofRotateDeg(-currentHeading+90, 0, 1 , 0);
-  
+    
     float scl = 1;
     glScalef(scl, scl, scl);
-    flyFont.drawString("dragonFly", 0, 0);
+    flyFont.drawString(name, 0, 0);
     ofPopMatrix();
 }
 
@@ -186,6 +205,12 @@ void dragonFly::draw(){
 
 void dragonFly::reset(){
     currentLoc = ofVec2f(worldX/2,worldZ/2);
+}
+
+
+void dragonFly::setName(string newName){
+    name = newName;
+    cout << "setting newname" << endl;
 }
 
 //--------------------------------------------------------------
@@ -212,6 +237,23 @@ void ofApp::keyReleased(int key){
         case ' ': // reset location
             for (int i = 0 ; i < flies.size() ; i++){
                 flies[i].reset();
+            }
+            break;
+        case 'l':
+            
+            //Open the Open File Dialog to load text file
+            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
+            
+            //Check if the user opened a file
+            if (openFileResult.bSuccess){
+                
+                ofLogVerbose("User selected a file");
+                
+                //We have a file, check it and process it
+                processOpenFileSelection(openFileResult);
+                
+            }else {
+                ofLogVerbose("User hit cancel");
             }
             break;
     }
@@ -261,3 +303,139 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
     
 }
+
+//--------------------------------------------------------------
+
+void ofApp::setupWords(string content){
+    
+    // take our text and process into a vector of words
+    words.clear();
+    
+    // take the content and split it up by spaces
+    // we need to also turn new lines into spaces so we can seperate words on new lines as well
+    ofStringReplace(content, "\r", " ");
+    ofStringReplace(content, "\n", " ");
+    
+    vector <string> splitString = ofSplitString(content, " ", true, true);
+    
+    // copy over the words to our object
+    for (unsigned int i=0; i<splitString.size(); i++) {
+        LyricWord wrd;
+        wrd.occurrences = 1;
+        wrd.word = ofToLower( splitString[i] );
+        words.push_back(wrd);
+    }
+    
+    // clean up the words removing any
+    // characters that we do not want
+    for (unsigned int i=0; i<words.size(); i++) {
+        // run throught this ignore list and replace
+        // that char with nothing
+        char ignoreList[12] = {',', '.', '(', ')', '?', '!', '-', ':', '"', '\'', '\n', '\t'};
+        for(int j=0; j<12; j++) {
+            
+            // make string from char
+            string removeStr;
+            removeStr += ignoreList[j];
+            
+            // remove and of the chars found
+            ofStringReplace(words[i].word, removeStr, "");
+        }
+    }
+    
+    // count the amount of times that we see a word
+    for (unsigned int i=0; i<words.size(); i++) {
+        int c = 1;
+        for (unsigned int j=0; j<words.size(); j++) {
+            if(words[i].word == words[j].word) c ++;
+        }
+        words[i].occurrences = c;
+    }
+    
+    // remove duplicates of the words
+    vector<LyricWord>tempWord;
+    for (unsigned int i=0; i<words.size(); i++) {
+        bool bAdd = true;
+        for(unsigned int j=0; j<tempWord.size(); j++) {
+            if(words[i].word == tempWord[j].word) bAdd = false;
+        }
+        
+        if(bAdd) {
+            tempWord.push_back(words[i]);
+        }
+    }
+    
+    words = tempWord;
+    
+    // remove word we do not want
+    ofRemove(words, ofApp::removeWordIf);
+}
+
+
+// remove function
+//--------------------------------------------------------------
+bool ofApp::removeWordIf(LyricWord &wrd) {
+    
+    bool bRemove = false;
+    static string ignoreWords[11] = {"the", "to", "of", "a", "and", "i", "it", "if", "is", "in", "be"};
+    
+    // if this word empty
+    if(wrd.word.empty()) bRemove = true;
+    
+    // are we a word that we do now want
+    for (int j=0; j<11; j++) {
+        if(wrd.word == ignoreWords[j]) {
+            bRemove = true;
+            break;
+        }
+    }
+    
+    return bRemove;
+}
+
+// sort on abc's
+//--------------------------------------------------------------
+bool ofApp::sortOnABC(const LyricWord &a, const LyricWord &b) {
+    return a.word < b.word;
+}
+
+// sort on word length
+//--------------------------------------------------------------
+bool ofApp::sortOnLength(const LyricWord &a, const LyricWord &b) {
+    return (int)a.word.size() > (int)b.word.size();
+}
+
+// sort on occurrences
+//--------------------------------------------------------------
+bool ofApp::sortOnOccurrences(const LyricWord &a, const LyricWord &b) {
+    return a.occurrences > b.occurrences;
+}
+
+//--------------------------------------------------------------
+
+void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
+    
+    ofLogVerbose("getName(): "  + openFileResult.getName());
+    ofLogVerbose("getPath(): "  + openFileResult.getPath());
+    
+    ofFile file (openFileResult.getPath());
+    
+    if (file.exists()){
+        
+        ofLogVerbose("The file exists - now checking the type via file extension");
+        string fileExtension = ofToUpper(file.getExtension());
+        
+        //We only want text
+        if (fileExtension == "TXT") {
+            
+            // load the txt document into an ofBuffer
+            ofBuffer buffer = ofBufferFromFile(file);
+            string   content = buffer.getText();
+            setupWords(content);
+            
+        }
+    }
+    
+}
+
+

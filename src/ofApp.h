@@ -22,10 +22,24 @@ public:
     void update();
     void draw();
     void reset();
+    void setName(string newName);
     
     ofTrueTypeFont      flyFont;
     
+    
+    
+    
 };
+
+// ---------------------------------------------
+class LyricWord {
+public:
+    string  word;
+    int     occurrences;
+    
+};
+// ---------------------------------------------
+
 
 class ofApp : public ofBaseApp{
     
@@ -63,4 +77,19 @@ class ofApp : public ofBaseApp{
     ofTrueTypeFont      font;
 
     string              flyNames;
+    
+    // adding elements to load and sort text files
+    string              sortTypeInfo;
+    vector <LyricWord>  words;
+    
+    static bool sortOnABC(const LyricWord &a, const LyricWord &b);
+    static bool sortOnOccurrences(const LyricWord &a, const LyricWord &b);
+    static bool sortOnLength(const LyricWord &a, const LyricWord &b);
+    static bool removeWordIf(LyricWord &wrd);
+    
+    
+    void setupWords(string content);
+    void processOpenFileSelection(ofFileDialogResult openFileResult);
+    string originalFileExtension;
+    
 };
