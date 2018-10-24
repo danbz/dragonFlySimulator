@@ -8,8 +8,7 @@ void ofApp::setup(){
     // github.com/danbz   http://www.buzzo.com
     //experimental branch to swap 3d for text representations October 2018
     
-    
-    int numOfFlies = 150;
+    int numOfFlies = 1000;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -43,17 +42,18 @@ void ofApp::setup(){
     // cout << content << endl;
     // create dragonfly swarm
     cout << "words in wordlist " << words.size() << endl;
+    
+    // create and name the flies
+    int amountWords = words.size();
+    string newName;
+    
     for (int i = 0 ; i < numOfFlies ; i++ ){
         dragonFly newfly;
-        
-        if (i < words.size()) {
-            string newName = words[i].word; // set name to lyric
-            newfly.setName(newName);
-        } else {            newfly.name = "overloaded";
-        }
+        newName = words[ i % amountWords ].word; // set name to lyric
+        newfly.setName(newName);
         flies.push_back(newfly);
-        
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -123,7 +123,7 @@ dragonFly::dragonFly(){  // dragonFly constructor
     currentLoc = ofVec2f(worldX/2,worldZ/2);
     currentVec = ofVec2f(0,0);
     name = "dragonFly"; // default dragonfly name
-    cout << "constructing dragonfly" << endl;
+   // cout << "constructing dragonfly" << endl;
     
     // set type parameters
     
@@ -135,7 +135,7 @@ dragonFly::dragonFly(){  // dragonFly constructor
 //--------------------------------------------------------------
 
 dragonFly::~dragonFly(){
-    cout << "destructing dragonfly" << endl;
+   // cout << "destructing dragonfly" << endl;
 }
 
 //--------------------------------------------------------------
@@ -430,6 +430,14 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
             ofBuffer buffer = ofBufferFromFile(file);
             string   content = buffer.getText();
             setupWords(content);
+            
+            // rename all the flies
+            int amountWords = words.size();
+            string newName;
+            for (int i = 0 ; i < flies.size() ; i++ ){
+                newName = words[ i % amountWords ].word; // set name to lyric
+                flies[i].setName(newName);
+            }
             
         }
     }
