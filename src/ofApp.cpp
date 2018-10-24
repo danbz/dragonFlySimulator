@@ -9,7 +9,7 @@ void ofApp::setup(){
     //experimental branch to swap 3d for text representations October 2018
     
     
-    int numOfFlies = 170;
+    int numOfFlies = 150;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -35,13 +35,12 @@ void ofApp::setup(){
     flyNames ="dragonFly";
     
     // load fresh prince lyrics
-
-     sortTypeInfo = "no sort";
+    sortTypeInfo = "no sort";
     
     ofBuffer buffer = ofBufferFromFile("freshprince.txt");
     string   content = buffer.getText();
     setupWords(content);
-   // cout << content << endl;
+    // cout << content << endl;
     // create dragonfly swarm
     cout << "words in wordlist " << words.size() << endl;
     for (int i = 0 ; i < numOfFlies ; i++ ){
@@ -49,11 +48,11 @@ void ofApp::setup(){
         
         if (i < words.size()) {
             string newName = words[i].word; // set name to lyric
-        newfly.setName(newName);
-      } else {            newfly.name = "overloaded";
-      }
+            newfly.setName(newName);
+        } else {            newfly.name = "overloaded";
+        }
         flies.push_back(newfly);
-       
+        
     }
 }
 
@@ -210,7 +209,6 @@ void dragonFly::reset(){
 
 void dragonFly::setName(string newName){
     name = newName;
-    cout << "setting newname" << endl;
 }
 
 //--------------------------------------------------------------
@@ -372,7 +370,7 @@ void ofApp::setupWords(string content){
 }
 
 
-// remove function
+// remove extraneous words function
 //--------------------------------------------------------------
 bool ofApp::removeWordIf(LyricWord &wrd) {
     
@@ -437,5 +435,3 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
     }
     
 }
-
-
