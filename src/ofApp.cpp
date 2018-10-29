@@ -111,7 +111,7 @@ dragonFly::dragonFly(){  // dragonFly constructor
     worldX = 4000; // set individual fly 3d world  size
     worldY = 1000;
     worldZ = 4000;
-    lifeTime = 10000 + ofRandom(10000); // life of dragonFly in milliseconds
+    lifeTime = 10000 + ofRandom(20000); // life of dragonFly in milliseconds
     //fly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 40.0;
@@ -157,7 +157,7 @@ dragonFly::dragonFly(){  // dragonFly constructor
 //--------------------------------------------------------------
 
 dragonFly::~dragonFly(){
-    sound.unload();
+   // sound.unload();
 }
 
 //--------------------------------------------------------------
@@ -223,6 +223,7 @@ void dragonFly::decision(){
     } else {
         alive = false; // fly is past it's lifelength
         currentAltitude = 0;
+        bodyColor = (ofRandom(200)+50);
         
     }
     
@@ -231,7 +232,9 @@ void dragonFly::decision(){
 //--------------------------------------------------------------
 
 void dragonFly::draw(){
+    
     ofSetColor(bodyColor);
+   
     // body.draw();
     
     //ofSetColor(255,255,255);
