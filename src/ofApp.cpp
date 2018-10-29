@@ -135,6 +135,7 @@ dragonFly::dragonFly(){  // dragonFly constructor
     currentVec = ofVec2f(0,0);
     name = "dragonFly"; // default dragonfly name
     spawnTime = ofGetSystemTimeMillis(); // add in timestamp of when this fly was spa2wned
+    alive = true;
     
     // set type parameters
     flyFont.load( "sans-serif", ofRandom(15)+10, true, false, false, 0.3f, 192 );
@@ -162,8 +163,7 @@ dragonFly::~dragonFly(){
 //--------------------------------------------------------------
 
 void dragonFly::update(){
-    if (ofGetSystemTimeMillis()< spawnTime + lifeTime){
-        
+    if (alive){
         ofVec2f v1(0, 1); // constant for heading angle and vector calulations
         if (ofGetSystemTimeMillis() > currentWaitTime) {
             decision();
@@ -183,8 +183,6 @@ void dragonFly::update(){
             currentHeading = v1.angle(currentVec);
         }
         currentLoc += currentVec*currentSpeed;
-    } else {
-        currentAltitude = 0;
     }
     //    head.setParent(body);
     //    body.resetTransform();
@@ -210,16 +208,22 @@ void dragonFly::update(){
 
 //--------------------------------------------------------------
 void dragonFly::decision(){
-    // choose new direction, speed and waittime
-    currentHeading = currentHeading +  ofRandom(directionVar) - (directionVar/2);
-    currentSpeed = ofRandom(speedMin, speedMax);
-    currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
     
-    //generate vector from heading
-    ofVec2f v1(0, 1);
-    currentVec = v1.getRotated(currentHeading); //
-    //    body.resetTransform();
-    //    body.rotateDeg(-currentHeading, 0, 1 , 0);
+    if ( ofGetSystemTimeMillis()< spawnTime + lifeTime ){
+        // choose new direction, speed and waittime
+        currentHeading = currentHeading +  ofRandom(directionVar) - (directionVar/2);
+        currentSpeed = ofRandom(speedMin, speedMax);
+        currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
+        
+        //generate vector from heading
+        ofVec2f v1(0, 1);
+        currentVec = v1.getRotated(currentHeading); //
+        //    body.resetTransform();
+        //    body.rotateDeg(-currentHeading, 0, 1 , 0);
+    } else {
+        alive = false; // fly is past it's lifelength
+        currentAltitude = 0;
+    }
     
 }
 
@@ -233,7 +237,9 @@ void dragonFly::draw(){
     ofPushMatrix();
     ofTranslate(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2 );
     ofRotateDeg(-currentHeading+90, 0, 1 , 0);
-    
+    if (!alive){
+        ofRotateXDeg(90);
+    }
     float scl = 1;
     glScalef(scl, scl, scl);
     flyFont.drawString(name, 0, 0);

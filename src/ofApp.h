@@ -8,6 +8,7 @@ class dragonFly {
     
 public:
     float width, length, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude, spawnTime, lifeTime;
+    bool alive;
     ofVec2f currentLoc, currentVec;
     ofSpherePrimitive head;
     ofConePrimitive body;
