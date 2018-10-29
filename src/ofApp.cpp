@@ -8,7 +8,7 @@ void ofApp::setup(){
     // github.com/danbz   http://www.buzzo.com
     //experimental branch to swap 3d for text representations October 2018
     
-    int numOfFlies = 1000;
+    int numOfFlies = 2000;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -17,7 +17,7 @@ void ofApp::setup(){
     worldFloor.set(worldX, worldZ); //setup wiredframe world edges
     worldFloor.setResolution(10,10);
     worldFloor.rotateDeg(90, 1, 0, 0);
-    worldFloor.setPosition(0, -worldY/2.0, 0);
+    worldFloor.setPosition(0, (-worldY/2.0) -1, 0);
     
     ofSetBackgroundColor(0);
     b_drawGui = true;
@@ -141,16 +141,16 @@ dragonFly::dragonFly(){  // dragonFly constructor
     flyFont.load( "sans-serif", ofRandom(15)+10, true, false, false, 0.3f, 192 );
     
     // set initial sound parameters
-    if ( sound.load("buzz.aif") ){
-        cout << "sound is loaded " << sound.isLoaded() << endl;
-        sound.setLoop(true);
-        sound.setPan(0.5f);
-        sound.setVolume(0.5f);
-        sound.play();
-    } else {
-        cout << "sound not loaded" << endl;
-    };
-   
+//    if ( sound.load("buzz.aif") ){
+//        cout << "sound is loaded " << sound.isLoaded() << endl;
+//        sound.setLoop(true);
+//        sound.setPan(0.5f);
+//        sound.setVolume(0.5f);
+//        sound.play();
+//    } else {
+//        cout << "sound not loaded" << endl;
+//    };
+//
     
 }
 
@@ -223,6 +223,7 @@ void dragonFly::decision(){
     } else {
         alive = false; // fly is past it's lifelength
         currentAltitude = 0;
+        
     }
     
 }
@@ -238,7 +239,7 @@ void dragonFly::draw(){
     ofTranslate(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2 );
     ofRotateDeg(-currentHeading+90, 0, 1 , 0);
     if (!alive){
-        ofRotateXDeg(90);
+        ofRotateXDeg(-90);
     }
     float scl = 1;
     glScalef(scl, scl, scl);
@@ -254,6 +255,9 @@ void dragonFly::draw(){
 
 void dragonFly::reset(){
     currentLoc = ofVec2f(worldX/2,worldZ/2);
+    alive = true;
+    spawnTime = ofGetSystemTimeMillis();
+    currentAltitude = ofRandom(0.0+worldY);
 }
 
 
