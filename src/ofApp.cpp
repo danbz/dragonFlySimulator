@@ -54,6 +54,11 @@ void ofApp::setup(){
         flies.push_back(newfly);
     }
     
+//    buzz.load("buzz.aif");
+//    buzz.setLoop(true);
+//    buzz.setVolume(0.5f);
+//    buzz.setPan(0.5f);
+//    buzz.play();
 }
 
 //--------------------------------------------------------------
@@ -71,7 +76,6 @@ void ofApp::draw(){
     worldLight.enable();
     
     // draw boundaries of visible/navigable flight area world
-    
     ofSetColor(200,200,200);
     worldBox.drawWireframe();
     ofSetColor(65,65,65);
@@ -84,7 +88,6 @@ void ofApp::draw(){
     // worldLight.draw();
     ofDisableLighting();
     ofDisableDepthTest();
-    
     cam.end();
     
     if (b_drawGui){
@@ -96,11 +99,19 @@ void ofApp::draw(){
     
 }
 //--------------------------------------------------------------
+
+
+ofVec3f ofApp::getCamPos(){
+   return cam.getGlobalPosition();
+};
+
+//--------------------------------------------------------------
+
 dragonFly::dragonFly(){  // dragonFly constructor
     worldX = 4000; // set individual fly 3d world  size
     worldY = 1000;
     worldZ = 4000;
-    
+    lifeTime = 10000 + ofRandom(10000); // life of dragonFly in milliseconds
     //fly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 40.0;
@@ -123,49 +134,78 @@ dragonFly::dragonFly(){  // dragonFly constructor
     currentLoc = ofVec2f(worldX/2,worldZ/2);
     currentVec = ofVec2f(0,0);
     name = "dragonFly"; // default dragonfly name
-   // cout << "constructing dragonfly" << endl;
+    spawnTime = ofGetSystemTimeMillis(); // add in timestamp of when this fly was spa2wned
     
     // set type parameters
-    
     flyFont.load( "sans-serif", ofRandom(15)+10, true, false, false, 0.3f, 192 );
-    // flyFont.load( "sans-serif", ofRandom(15)+10 );
+    
+    // set initial sound parameters
+    if ( sound.load("buzz.aif") ){
+        cout << "sound is loaded " << sound.isLoaded() << endl;
+        sound.setLoop(true);
+        sound.setPan(0.5f);
+        sound.setVolume(0.5f);
+        sound.play();
+    } else {
+        cout << "sound not loaded" << endl;
+    };
+   
     
 }
 
 //--------------------------------------------------------------
 
 dragonFly::~dragonFly(){
-   // cout << "destructing dragonfly" << endl;
+    sound.unload();
 }
 
 //--------------------------------------------------------------
 
 void dragonFly::update(){
-    ofVec2f v1(0, 1); // constant for heading angle and vector calulations
-    if (ofGetSystemTimeMillis() > currentWaitTime) {
-        decision();
+    if (ofGetSystemTimeMillis()< spawnTime + lifeTime){
+        
+        ofVec2f v1(0, 1); // constant for heading angle and vector calulations
+        if (ofGetSystemTimeMillis() > currentWaitTime) {
+            decision();
+        }
+        
+        if (currentLoc.x < 0 && currentVec.x <0) {
+            currentVec.x +=  2* abs(currentVec.x);
+            currentHeading = v1.angle(currentVec);
+        } else if (currentLoc.x > worldX && currentVec.x > 0){
+            currentVec.x -=  2* abs(currentVec.x);
+            currentHeading = v1.angle(currentVec);
+        } else if (currentLoc.y <0 && currentVec.y <0) {
+            currentVec.y += 2* abs(currentVec.y);
+            currentHeading = v1.angle(currentVec);
+        } else if (currentLoc.y >worldZ && currentVec.y >0){
+            currentVec.y -= 2* abs(currentVec.y);
+            currentHeading = v1.angle(currentVec);
+        }
+        currentLoc += currentVec*currentSpeed;
+    } else {
+        currentAltitude = 0;
     }
-    
-    if (currentLoc.x < 0 && currentVec.x <0) {
-        currentVec.x +=  2* abs(currentVec.x);
-        currentHeading = v1.angle(currentVec);
-    } else if (currentLoc.x > worldX && currentVec.x > 0){
-        currentVec.x -=  2* abs(currentVec.x);
-        currentHeading = v1.angle(currentVec);
-    } else if (currentLoc.y <0 && currentVec.y <0) {
-        currentVec.y += 2* abs(currentVec.y);
-        currentHeading = v1.angle(currentVec);
-    } else if (currentLoc.y >worldZ && currentVec.y >0){
-        currentVec.y -= 2* abs(currentVec.y);
-        currentHeading = v1.angle(currentVec);
-    }
-    currentLoc += currentVec*currentSpeed;
     //    head.setParent(body);
     //    body.resetTransform();
     //    body.rotateDeg(90, 0, 0, 1);
     //
     //    body.rotateDeg(-currentHeading+90, 0, 1 , 0);
     //    body.setGlobalPosition(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2);
+    // calculate position left or right of camera -observer
+    // ofVec3f camDirection = ofApp::cam.getLookAtDir();
+    // ofVec3f camPosition = ofApp::cam.getGlobalPosition();
+    //ofVec3f camPosition =  ofApp::getCamPos();
+    //    ofVec3f camPosition = ofVec3f(0,0,0);
+    //    ofVec3f totalDistance = camPosition - (currentLoc.x, currentLoc.y, currentAltitude);
+    //    float distance = totalDistance.x + totalDistance.y + totalDistance.z;
+    //    //sound.setPan(<#float pan#>);
+    //
+    //    float vol =  ofMap(distance, 0, 1000, 1, 0);
+    //    cout << "vol " << vol << endl;
+    //   // sound.setVolume( vol );
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -198,6 +238,10 @@ void dragonFly::draw(){
     glScalef(scl, scl, scl);
     flyFont.drawString(name, 0, 0);
     ofPopMatrix();
+//    if (!sound.isPlaying()){
+//        sound.play();
+//    }
+//    cout << "sound is playing " << sound.isPlaying() << endl;
 }
 
 //--------------------------------------------------------------
@@ -209,6 +253,12 @@ void dragonFly::reset(){
 
 void dragonFly::setName(string newName){
     name = newName;
+}
+
+//--------------------------------------------------------------
+
+string dragonFly::getName(){
+     return name;
 }
 
 //--------------------------------------------------------------
@@ -228,8 +278,7 @@ void ofApp::keyReleased(int key){
         case 'f':
         case 'F':
             ofToggleFullscreen();
-            //            worldX =  ofGetScreenWidth();
-            //            worldY =  ofGetScreenHeight();
+
             break;
             
         case ' ': // reset location
@@ -368,7 +417,6 @@ void ofApp::setupWords(string content){
     // remove word we do not want
     ofRemove(words, ofApp::removeWordIf);
 }
-
 
 // remove extraneous words function
 //--------------------------------------------------------------

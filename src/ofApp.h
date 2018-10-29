@@ -7,7 +7,7 @@
 class dragonFly {
     
 public:
-    float width, length, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
+    float width, length, currentWaitTime, currentSpeed, currentHeading, directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude, spawnTime, lifeTime;
     ofVec2f currentLoc, currentVec;
     ofSpherePrimitive head;
     ofConePrimitive body;
@@ -23,23 +23,24 @@ public:
     void draw();
     void reset();
     void setName(string newName);
+    string getName();
+    ofTrueTypeFont  flyFont;
     
-    ofTrueTypeFont      flyFont;
-    
-    
-    
+    ofSoundPlayer sound;
     
 };
 
 // ---------------------------------------------
+
 class LyricWord {
+    
 public:
     string  word;
     int     occurrences;
     
 };
-// ---------------------------------------------
 
+// ---------------------------------------------
 
 class ofApp : public ofBaseApp{
     
@@ -59,27 +60,26 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    
+    ofVec3f getCamPos();
     
     //ofxFloatSlider directionVar, speedMin, speedMax, distanceMin, distanceMax, waitTime, currentAltitude;
     ofxPanel guiFlight ;
    
     bool b_drawGui;
     int worldX, worldY, worldZ;
-
     ofEasyCam cam;
+    
     ofBoxPrimitive worldBox;
     ofPlanePrimitive worldFloor;
     ofLight worldLight;
-    //dragonFly fly1, fly2;
     
     vector<dragonFly> flies;
-    ofTrueTypeFont      font;
+    ofTrueTypeFont font;
 
-    string              flyNames;
+    string flyNames;
     
     // adding elements to load and sort text files
-    string              sortTypeInfo;
+    string sortTypeInfo;
     vector <LyricWord>  words;
     
     static bool sortOnABC(const LyricWord &a, const LyricWord &b);
@@ -87,9 +87,10 @@ class ofApp : public ofBaseApp{
     static bool sortOnLength(const LyricWord &a, const LyricWord &b);
     static bool removeWordIf(LyricWord &wrd);
     
-    
     void setupWords(string content);
     void processOpenFileSelection(ofFileDialogResult openFileResult);
     string originalFileExtension;
+    
+    ofSoundPlayer buzz;
     
 };
