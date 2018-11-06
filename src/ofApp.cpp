@@ -1,14 +1,17 @@
 #include "ofApp.h"
 
+int liveFlies; // count current number of live flies
+
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     // dragon fly flight characteristics simulation
-    // august 2018 dan buzzo dan@buzzo.com www.buzzo.com
+    // august, november 2018 dan buzzo dan@buzzo.com www.buzzo.com
     // flight charactre simulation in x,z plane with 3d viewport rendering
     // github.com/danbz   http://www.buzzo.com
-    //experimental branch to swap 3d for text representations October 2018
+    // experimental branch to swap 3d for text representations October 2018
     
-    int numOfFlies = 2000;
+    numOfFlies = liveFlies = 3000;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -54,17 +57,28 @@ void ofApp::setup(){
         flies.push_back(newfly);
     }
     
-//    buzz.load("buzz.aif");
-//    buzz.setLoop(true);
-//    buzz.setVolume(0.5f);
-//    buzz.setPan(0.5f);
-//    buzz.play();
+    //    buzz.load("buzz.aif");
+    //    buzz.setLoop(true);
+    //    buzz.setVolume(0.5f);
+    //    buzz.setPan(0.5f);
+    //    buzz.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     for (int i = 0 ; i < flies.size() ; i++){
         flies[i].update();
+    }
+    
+    if (liveFlies <ofRandom(1000)){
+        string newName;
+        for (int i =0; i< ofRandom(numOfFlies-50); i++)
+            newName = words[ ofRandom(words.size()) ].word; // set name to lyric
+        dragonFly spawnFly;
+        spawnFly.setName(newName);
+        flies.erase( flies.begin() );//remove the first fly from the swarm
+        flies.push_back(spawnFly); // add a new fly to the end of the swarm
+        liveFlies +=1;
     }
 }
 
@@ -93,25 +107,25 @@ void ofApp::draw(){
     if (b_drawGui){
         stringstream flyStatus;
         //flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
+        flyStatus << "num of dragonFlies: " << numOfFlies << ", live dragonFlies: " << liveFlies << endl;
         ofDrawBitmapString(flyStatus.str(), 20,  20);
-        // guiFlight.draw();
+        // guiFlight.draw();f
     }
     
 }
 //--------------------------------------------------------------
 
-
 ofVec3f ofApp::getCamPos(){
-   return cam.getGlobalPosition();
+    return cam.getGlobalPosition();
 };
-
 //--------------------------------------------------------------
 
 dragonFly::dragonFly(){  // dragonFly constructor
     worldX = 4000; // set individual fly 3d world  size
     worldY = 1000;
     worldZ = 4000;
-    lifeTime = 10000 + ofRandom(20000); // life of dragonFly in milliseconds
+    lifeTime = 30000 + ofRandom(30000); // life of dragonFly in milliseconds
+    
     //fly characteristics
     width = ofRandom(8) + 3.0;
     length = ofRandom(50)+ 40.0;
@@ -141,23 +155,22 @@ dragonFly::dragonFly(){  // dragonFly constructor
     flyFont.load( "sans-serif", ofRandom(15)+10, true, false, false, 0.3f, 192 );
     
     // set initial sound parameters
-//    if ( sound.load("buzz.aif") ){
-//        cout << "sound is loaded " << sound.isLoaded() << endl;
-//        sound.setLoop(true);
-//        sound.setPan(0.5f);
-//        sound.setVolume(0.5f);
-//        sound.play();
-//    } else {
-//        cout << "sound not loaded" << endl;
-//    };
-//
+    //    if ( sound.load("buzz.aif") ){
+    //        cout << "sound is loaded " << sound.isLoaded() << endl;
+    //        sound.setLoop(true);
+    //        sound.setPan(0.5f);
+    //        sound.setVolume(0.5f);
+    //        sound.play();
+    //    } else {
+    //        cout << "sound not loaded" << endl;
+    //    };
+    //
     
 }
-
 //--------------------------------------------------------------
 
 dragonFly::~dragonFly(){
-   // sound.unload();
+    // sound.unload();
 }
 
 //--------------------------------------------------------------
@@ -203,7 +216,6 @@ void dragonFly::update(){
     //    cout << "vol " << vol << endl;
     //   // sound.setVolume( vol );
     
-    
 }
 
 //--------------------------------------------------------------
@@ -214,7 +226,6 @@ void dragonFly::decision(){
         currentHeading = currentHeading +  ofRandom(directionVar) - (directionVar/2);
         currentSpeed = ofRandom(speedMin, speedMax);
         currentWaitTime = ofGetSystemTimeMillis() + ofRandom(waitTime);
-        
         //generate vector from heading
         ofVec2f v1(0, 1);
         currentVec = v1.getRotated(currentHeading); //
@@ -222,11 +233,10 @@ void dragonFly::decision(){
         //    body.rotateDeg(-currentHeading, 0, 1 , 0);
     } else {
         alive = false; // fly is past it's lifelength
+        liveFlies -=1; // count down live flies
         currentAltitude = 0;
         bodyColor = (ofRandom(200)+50);
-        
     }
-    
 }
 
 //--------------------------------------------------------------
@@ -234,9 +244,7 @@ void dragonFly::decision(){
 void dragonFly::draw(){
     
     ofSetColor(bodyColor);
-   
     // body.draw();
-    
     //ofSetColor(255,255,255);
     ofPushMatrix();
     ofTranslate(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2 );
@@ -248,10 +256,9 @@ void dragonFly::draw(){
     glScalef(scl, scl, scl);
     flyFont.drawString(name, 0, 0);
     ofPopMatrix();
-//    if (!sound.isPlaying()){
-//        sound.play();
-//    }
-//    cout << "sound is playing " << sound.isPlaying() << endl;
+    //    if (!sound.isPlaying()){
+    //        sound.play();
+    //    }
 }
 
 //--------------------------------------------------------------
@@ -259,10 +266,11 @@ void dragonFly::draw(){
 void dragonFly::reset(){
     currentLoc = ofVec2f(worldX/2,worldZ/2);
     alive = true;
+    liveFlies +=1;
     spawnTime = ofGetSystemTimeMillis();
     currentAltitude = ofRandom(0.0+worldY);
 }
-
+//--------------------------------------------------------------
 
 void dragonFly::setName(string newName){
     name = newName;
@@ -271,7 +279,7 @@ void dragonFly::setName(string newName){
 //--------------------------------------------------------------
 
 string dragonFly::getName(){
-     return name;
+    return name;
 }
 
 //--------------------------------------------------------------
@@ -291,10 +299,11 @@ void ofApp::keyReleased(int key){
         case 'f':
         case 'F':
             ofToggleFullscreen();
-
+            
             break;
             
         case ' ': // reset location
+            liveFlies = 0;
             for (int i = 0 ; i < flies.size() ; i++){
                 flies[i].reset();
             }
@@ -431,7 +440,6 @@ void ofApp::setupWords(string content){
     ofRemove(words, ofApp::removeWordIf);
 }
 
-// remove extraneous words function
 //--------------------------------------------------------------
 bool ofApp::removeWordIf(LyricWord &wrd) {
     
@@ -499,8 +507,6 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
                 newName = words[ i % amountWords ].word; // set name to lyric
                 flies[i].setName(newName);
             }
-            
         }
     }
-    
 }

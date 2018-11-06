@@ -91,7 +91,7 @@ class ofApp : public ofBaseApp{
     void setupWords(string content);
     void processOpenFileSelection(ofFileDialogResult openFileResult);
     string originalFileExtension;
-    
+    int  numOfFlies;
     ofSoundPlayer buzz;
     
 };
