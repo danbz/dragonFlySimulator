@@ -1,5 +1,6 @@
 # dragonFlySimulator 3D branch
-dragonFlySimulator initial version of simulating dragonFly flight characteristics
+dragonFlySimulator 3d version version of simulating dragonFly flight characteristics
+using parsed text as flies 
 
 written in c++ openframeworks - based upon simple dragonfly observations at Shimoda Beach, Izu, Japan
 
@@ -18,3 +19,6 @@ direction variance
 wait time - range of time possible between dragon fly decisions
 
 min and max speed - upper and lower ranges for speed selection
+
+
+![screenshot](http://buzzo.com/wp-content/uploads/2018/11/text-dragonflies.png)
