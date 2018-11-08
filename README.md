@@ -1,5 +1,8 @@
-# dragonFlySimulator 3D branch
-dragonFlySimulator initial version of simulating dragonFly flight characteristics
+# dragonFlySimulator 3D experimental VR branch
+dragonFlySimulator experimental text version of simulating dragonFly flight characteristics
+brabnch to develop VR version using 
+
+ofxOpenVR  https://github.com/smallfly/ofxOpenVR
 
 written in c++ openframeworks - based upon simple dragonfly observations at Shimoda Beach, Izu, Japan
 
@@ -11,10 +14,14 @@ g: toggle GUI
 
 spacebar: reset dragonfly position
 
-sliders for
+the dragonFly class builds with  randomised
 
 direction variance
 
 wait time - range of time possible between dragon fly decisions
 
 min and max speed - upper and lower ranges for speed selection
+
+lifespan
+
+respawn amount
