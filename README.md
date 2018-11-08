@@ -20,7 +20,7 @@ wait time - range of time possible between dragon fly decisions
 min and max speed - upper and lower ranges for speed selection
 
 
-![screenshot](http://buzzo.com/wp-content/uploads/2018/11/text-dragonflies.png)
+![screenshot](http://buzzo.com/wp-content/uploads/2018/11/cone-dragonflies.png)
 
 
 
