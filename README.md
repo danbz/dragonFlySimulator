@@ -20,7 +20,7 @@ wait time - range of time possible between dragon fly decisions
 min and max speed - upper and lower ranges for speed selection
 
 
-![screenshot](https://raw.githubusercontent.com/danbz/dragonFlySimulator/Screen Shot 2018-11-08 at 13.07.09.png)
+![screenshot](https://raw.githubusercontent.com/danbz/dragonFlySimulator/text-dragonflies.png)
 
 
         
