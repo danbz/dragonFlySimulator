@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
+#include "ofxFlite~.h"
 
 
 class dragonFly {
@@ -93,5 +94,14 @@ class ofApp : public ofBaseApp{
     string originalFileExtension;
     int  numOfFlies;
     ofSoundPlayer buzz;
+    
+    float fov;// camera fov
+    
+    
+    /// materials for ofxFlite speech
+    void audioOut(float * outpt, int bufferSize, int nChannels);
+    
+   
+    ofSoundStream sound;
     
 };

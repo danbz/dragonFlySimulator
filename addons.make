@@ -1,1 +1,3 @@
+ofxFlite
 ofxGui
+ofxPoco

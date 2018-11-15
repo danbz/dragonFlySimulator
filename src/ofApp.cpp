@@ -2,6 +2,13 @@
 
 int liveFlies; // count current number of live flies
 
+ ofxFlite flite;
+// setup ofxFlite speech output
+int sr = 44100; // specify the sample rate of the sound channel
+int bs = 512; // specify the bit rate of the sound channel
+float speed = 0.5f; // specify the speech speed
+float vol = 0.7; // specify the volume
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -11,7 +18,7 @@ void ofApp::setup(){
     // github.com/danbz   http://www.buzzo.com
     // experimental branch to swap 3d for text representations October 2018
     
-    numOfFlies = liveFlies = 3000;
+    numOfFlies = liveFlies = 50;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -24,7 +31,9 @@ void ofApp::setup(){
     
     ofSetBackgroundColor(0);
     b_drawGui = true;
+    fov = 90;
     cam.setPosition(500, 100, -100);
+    cam.setFov(fov);
     
     ofSetSmoothLighting(true);
     worldLight.setDiffuseColor( ofFloatColor(.85, .85, .55) );
@@ -39,7 +48,7 @@ void ofApp::setup(){
     // load fresh prince lyrics
     sortTypeInfo = "no sort";
     
-    ofBuffer buffer = ofBufferFromFile("freshprince.txt");
+    ofBuffer buffer = ofBufferFromFile("default.txt");
     string   content = buffer.getText();
     setupWords(content);
     // cout << content << endl;
@@ -62,6 +71,22 @@ void ofApp::setup(){
     //    buzz.setVolume(0.5f);
     //    buzz.setPan(0.5f);
     //    buzz.play();
+    
+    
+    // setup ofxFlite speech output
+//    int sr = 44100; // specify the sample rate of the sound channel
+//    int bs = 512; // specify the bit rate of the sound channel
+//    float speed = 0.5f; // specify the speech speed
+//    float vol = 0.7; // specify the volume
+    
+    flite.setup(sr,bs,"a ",speed,vol);
+   // flite.setLoop(false);
+    sound.getDeviceList();
+    sound.setDeviceID(1);
+    sound.setup(this, 2, 0, sr, bs, 8);
+    ofSetFrameRate(30);
+    ofSetWindowTitle("dragonFlies");
+
 }
 
 //--------------------------------------------------------------
@@ -70,9 +95,9 @@ void ofApp::update(){
         flies[i].update();
     }
     
-    if (liveFlies <ofRandom(1000)){
+    if (liveFlies <ofRandom(numOfFlies/2.0f)){
         string newName;
-        for (int i =0; i< ofRandom(numOfFlies-50); i++)
+        for (int i =0; i< ofRandom(numOfFlies-(numOfFlies/10.0f)); i++)
             newName = words[ ofRandom(words.size()) ].word; // set name to lyric
         dragonFly spawnFly;
         spawnFly.setName(newName);
@@ -124,7 +149,7 @@ dragonFly::dragonFly(){  // dragonFly constructor
     worldX = 4000; // set individual fly 3d world  size
     worldY = 1000;
     worldZ = 4000;
-    lifeTime = 30000 + ofRandom(30000); // life of dragonFly in milliseconds
+    lifeTime = 3000 + ofRandom(3000); // life of dragonFly in milliseconds
     
     //fly characteristics
     width = ofRandom(8) + 3.0;
@@ -235,6 +260,10 @@ void dragonFly::decision(){
         alive = false; // fly is past it's lifelength
         liveFlies -=1; // count down live flies
         currentAltitude = 0;
+    
+        flite.setText(name);
+     
+    
         bodyColor = (ofRandom(200)+50);
     }
 }
@@ -299,7 +328,6 @@ void ofApp::keyReleased(int key){
         case 'f':
         case 'F':
             ofToggleFullscreen();
-            
             break;
             
         case ' ': // reset location
@@ -308,21 +336,29 @@ void ofApp::keyReleased(int key){
                 flies[i].reset();
             }
             break;
-        case 'l':
             
-            //Open the Open File Dialog to load text file
-            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
+//        case 'l':
+//            //Open the Open File Dialog to load text file
+//            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
+//            //Check if the user opened a file
+//            if (openFileResult.bSuccess){
+//                ofLogVerbose("User selected a file");
+//                //We have a file, check it and process it
+//                processOpenFileSelection(openFileResult);
+//            } else {
+//                ofLogVerbose("User hit cancel");
+//            }
+//            break;
             
-            //Check if the user opened a file
-            if (openFileResult.bSuccess){
-                
-                ofLogVerbose("User selected a file");
-                
-                //We have a file, check it and process it
-                processOpenFileSelection(openFileResult);
-                
-            }else {
-                ofLogVerbose("User hit cancel");
+        case OF_KEY_LEFT:
+            fov ++;
+            cam.setFov(fov);
+            break;
+            
+        case OF_KEY_RIGHT:
+            if (fov >10){
+                fov --;
+                cam.setFov(fov);
             }
             break;
     }
@@ -508,5 +544,15 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
                 flies[i].setName(newName);
             }
         }
+    }
+}
+
+//--------------------------------------------------------------
+// for ofxflite speech synthesis
+void ofApp::audioOut(float * outpt, int bufferSize, int nChannels){
+    float * audiosys = flite.processBuffer();
+    for (int i = 0; i < bufferSize; i++){
+        outpt[i*nChannels    ] = audiosys[i] ;
+        outpt[i*nChannels + 1] =  audiosys[i] ;
     }
 }
