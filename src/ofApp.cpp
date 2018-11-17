@@ -84,8 +84,9 @@ void ofApp::setup(){
     sound.getDeviceList();
     sound.setDeviceID(1);
     sound.setup(this, 2, 0, sr, bs, 8);
-    ofSetFrameRate(30);
+    ofSetFrameRate(60);
     ofSetWindowTitle("dragonFlies");
+    
 
 }
 
@@ -257,14 +258,19 @@ void dragonFly::decision(){
         //    body.resetTransform();
         //    body.rotateDeg(-currentHeading, 0, 1 , 0);
     } else {
-        alive = false; // fly is past it's lifelength
-        liveFlies -=1; // count down live flies
-        currentAltitude = 0;
-    
-        flite.setText(name);
-     
-    
-        bodyColor = (ofRandom(200)+50);
+        if (alive){
+           // flite.setBufferLocPercent(0.0f);
+            alive = false; // fly is past it's lifelength
+            liveFlies -=1; // count down live flies
+            currentAltitude = 0; // drop fly to the floor
+            bodyColor = (ofRandom(200)+50);
+            
+           flite.setText(name); // add the name of the dying fly to text to say
+            
+         
+
+        }
+       
     }
 }
 
@@ -337,7 +343,7 @@ void ofApp::keyReleased(int key){
             }
             break;
             
-//        case 'l':
+        case 'l':
 //            //Open the Open File Dialog to load text file
 //            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
 //            //Check if the user opened a file
@@ -345,10 +351,10 @@ void ofApp::keyReleased(int key){
 //                ofLogVerbose("User selected a file");
 //                //We have a file, check it and process it
 //                processOpenFileSelection(openFileResult);
-//            } else {
-//                ofLogVerbose("User hit cancel");
-//            }
-//            break;
+////            } else {
+////                ofLogVerbose("User hit cancel");
+  //          }
+            break;
             
         case OF_KEY_LEFT:
             fov ++;
