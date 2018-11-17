@@ -9,6 +9,9 @@ int bs = 512; // specify the bit rate of the sound channel
 float speed = 0.5f; // specify the speech speed
 float vol = 0.7; // specify the volume
 
+ofxBulletWorldRigid            world;
+ofEasyCam cam;
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -18,7 +21,7 @@ void ofApp::setup(){
     // github.com/danbz   http://www.buzzo.com
     // experimental branch to swap 3d for text representations October 2018
     
-    numOfFlies = liveFlies = 50;
+    numOfFlies = liveFlies = 200;
     worldX = 4000;
     worldY = 1000;
     worldZ = 4000;
@@ -59,6 +62,13 @@ void ofApp::setup(){
     int amountWords = words.size();
     string newName;
     
+    // setup bullet physics world
+    world.setup();
+    world.enableGrabbing();
+    world.enableDebugDraw();
+    world.setCamera(&cam);
+    
+    
     for (int i = 0 ; i < numOfFlies ; i++ ){
         dragonFly newfly;
         newName = words[ i % amountWords ].word; // set name to lyric
@@ -87,7 +97,15 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     ofSetWindowTitle("dragonFlies");
     
+  
 
+    // bullet physics floor
+   // ground.create( world.world, ofVec3f(0., 5.5, 0.), 0., 100.f, 1.f, 100.f );
+    ground.create( world.world, ofVec3f(0., 0., 0.), 0., 100.f, 1.f, 100.f );
+
+    ground.setProperties(.25, .95);
+    ground.add();
+    
 }
 
 //--------------------------------------------------------------
@@ -106,6 +124,9 @@ void ofApp::update(){
         flies.push_back(spawnFly); // add a new fly to the end of the swarm
         liveFlies +=1;
     }
+    
+    world.update();
+
 }
 
 //--------------------------------------------------------------
@@ -192,6 +213,10 @@ dragonFly::dragonFly(){  // dragonFly constructor
     //    };
     //
     
+    cone = new ofxBulletCone();
+    cone->create(world.world, ofVec3f(-1, -1, .2), .2, width, length);
+    cone->add();
+    
 }
 //--------------------------------------------------------------
 
@@ -265,12 +290,9 @@ void dragonFly::decision(){
             currentAltitude = 0; // drop fly to the floor
             bodyColor = (ofRandom(200)+50);
             
-           flite.setText(name); // add the name of the dying fly to text to say
-            
-         
+         //  flite.setText(name); // add the name of the dying fly to text to say
 
         }
-       
     }
 }
 
@@ -283,17 +305,23 @@ void dragonFly::draw(){
     //ofSetColor(255,255,255);
     ofPushMatrix();
     ofTranslate(currentLoc.x - worldX/2.0, currentAltitude - worldY/2.0 , currentLoc.y - worldZ/2 );
+    ofRotateXDeg(-90);
+
     ofRotateDeg(-currentHeading+90, 0, 1 , 0);
     if (!alive){
         ofRotateXDeg(-90);
     }
     float scl = 1;
     glScalef(scl, scl, scl);
-    flyFont.drawString(name, 0, 0);
+    cone->draw();
+   // flyFont.drawString(name, 0, 0);
     ofPopMatrix();
     //    if (!sound.isPlaying()){
     //        sound.play();
     //    }
+    
+    
+
 }
 
 //--------------------------------------------------------------

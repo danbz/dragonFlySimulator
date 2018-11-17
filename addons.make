@@ -1,3 +1,4 @@
+ofxBullet
 ofxFlite
 ofxGui
 ofxPoco

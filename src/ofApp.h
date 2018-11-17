@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxFlite~.h"
+#include "ofxBullet.h"
+
 
 
 class dragonFly {
@@ -29,6 +31,9 @@ public:
     ofTrueTypeFont  flyFont;
     
     ofSoundPlayer sound;
+    
+    ofxBulletCone*                cone;
+
     
 };
 
@@ -69,7 +74,6 @@ class ofApp : public ofBaseApp{
    
     bool b_drawGui;
     int worldX, worldY, worldZ;
-    ofEasyCam cam;
     
     ofBoxPrimitive worldBox;
     ofPlanePrimitive worldFloor;
@@ -97,11 +101,13 @@ class ofApp : public ofBaseApp{
     
     float fov;// camera fov
     
-    
     /// materials for ofxFlite speech
     void audioOut(float * outpt, int bufferSize, int nChannels);
-    
    
     ofSoundStream sound;
+    
+    // bullet physics addons
+
+    ofxBulletBox                ground;
     
 };
