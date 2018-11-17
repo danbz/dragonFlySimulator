@@ -2,7 +2,7 @@
 
 int liveFlies; // count current number of live flies
 
- ofxFlite flite;
+ofxFlite flite;
 // setup ofxFlite speech output
 int sr = 44100; // specify the sample rate of the sound channel
 int bs = 512; // specify the bit rate of the sound channel
@@ -74,20 +74,19 @@ void ofApp::setup(){
     
     
     // setup ofxFlite speech output
-//    int sr = 44100; // specify the sample rate of the sound channel
-//    int bs = 512; // specify the bit rate of the sound channel
-//    float speed = 0.5f; // specify the speech speed
-//    float vol = 0.7; // specify the volume
+    //    int sr = 44100; // specify the sample rate of the sound channel
+    //    int bs = 512; // specify the bit rate of the sound channel
+    //    float speed = 0.5f; // specify the speech speed
+    //    float vol = 0.7; // specify the volume
     
     flite.setup(sr,bs,"a ",speed,vol);
-   // flite.setLoop(false);
+    flite.setLoop(false);
     sound.getDeviceList();
     sound.setDeviceID(1);
     sound.setup(this, 2, 0, sr, bs, 8);
     ofSetFrameRate(60);
     ofSetWindowTitle("dragonFlies");
     
-
 }
 
 //--------------------------------------------------------------
@@ -259,18 +258,16 @@ void dragonFly::decision(){
         //    body.rotateDeg(-currentHeading, 0, 1 , 0);
     } else {
         if (alive){
-           // flite.setBufferLocPercent(0.0f);
+            // flite.setBufferLocPercent(0.0f);
             alive = false; // fly is past it's lifelength
             liveFlies -=1; // count down live flies
             currentAltitude = 0; // drop fly to the floor
             bodyColor = (ofRandom(200)+50);
             
-           flite.setText(name); // add the name of the dying fly to text to say
-            
-         
-
+            flite.setBufferLocPercent(0.0);
+            flite.setText(name); // add the name of the dying fly to text to say
         }
-       
+        
     }
 }
 
@@ -344,16 +341,16 @@ void ofApp::keyReleased(int key){
             break;
             
         case 'l':
-//            //Open the Open File Dialog to load text file
-//            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
-//            //Check if the user opened a file
-//            if (openFileResult.bSuccess){
-//                ofLogVerbose("User selected a file");
-//                //We have a file, check it and process it
-//                processOpenFileSelection(openFileResult);
-////            } else {
-////                ofLogVerbose("User hit cancel");
-  //          }
+            //            //Open the Open File Dialog to load text file
+            //            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
+            //            //Check if the user opened a file
+            //            if (openFileResult.bSuccess){
+            //                ofLogVerbose("User selected a file");
+            //                //We have a file, check it and process it
+            //                processOpenFileSelection(openFileResult);
+            ////            } else {
+            ////                ofLogVerbose("User hit cancel");
+            //          }
             break;
             
         case OF_KEY_LEFT:

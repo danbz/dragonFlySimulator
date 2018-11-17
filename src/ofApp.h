@@ -97,11 +97,9 @@ class ofApp : public ofBaseApp{
     
     float fov;// camera fov
     
-    
     /// materials for ofxFlite speech
     void audioOut(float * outpt, int bufferSize, int nChannels);
-    
-   
+
     ofSoundStream sound;
     
 };
