@@ -2,12 +2,17 @@
 
 int liveFlies; // count current number of live flies
 
-ofxFlite flite;
-// setup ofxFlite speech output
+////vector<ofxFlite> voices; //
+ofxFlite *flite[NUMV];
+
+//// ofxFlite flite1, flite2, flite3, flite4;
+//// setup ofxFlite speech output
 int sr = 44100; // specify the sample rate of the sound channel
-int bs = 512; // specify the bit rate of the sound channel
+int bs = 128; // specify the bit rate of the sound channel
 float speed = 0.5f; // specify the speech speed
 float vol = 0.7; // specify the volume
+cst_voice *v;
+int numflite =0;
 
 
 //--------------------------------------------------------------
@@ -78,9 +83,18 @@ void ofApp::setup(){
     //    int bs = 512; // specify the bit rate of the sound channel
     //    float speed = 0.5f; // specify the speech speed
     //    float vol = 0.7; // specify the volume
+//    for (int i=0; i<maxVoices;i++){
+//        ofxFlite newVoice;
+//        newVoice.setup(sr,bs,"a ",speed,vol);
+//        newVoice.setLoop(false);
+//        voices.push_back(newVoice);
+//        //v=register_cmu_us_kal();
+//    }
+    for(int i=0; i<NUMV;i++){
+        flite[i] = new ofxFlite();
+        flite[i]->setup(sr,bs,"dragonFly",speed + ofRandom(-0.1, 0.05),vol);
+    }
     
-    flite.setup(sr,bs,"a ",speed,vol);
-    flite.setLoop(false);
     sound.getDeviceList();
     sound.setDeviceID(1);
     sound.setup(this, 2, 0, sr, bs, 8);
@@ -132,7 +146,7 @@ void ofApp::draw(){
     if (b_drawGui){
         stringstream flyStatus;
         //flyStatus << "heading: " << currentHeading << " vec: " << currentVec << " loc: " << currentLoc << endl;
-        flyStatus << "num of dragonFlies: " << numOfFlies << ", live dragonFlies: " << liveFlies << endl;
+        flyStatus << "num of dragonFlies: " << numOfFlies << ", live dragonFlies: " << liveFlies << " fps: " << ofToString(ofGetFrameRate()) << endl;
         ofDrawBitmapString(flyStatus.str(), 20,  20);
         // guiFlight.draw();f
     }
@@ -264,10 +278,27 @@ void dragonFly::decision(){
             currentAltitude = 0; // drop fly to the floor
             bodyColor = (ofRandom(200)+50);
             
-            flite.setBufferLocPercent(0.0);
-            flite.setText(name); // add the name of the dying fly to text to say
+            //flite.setBufferLocPercent(0.0);
+            //flite_text_to_speech("fresh", v, "play");
+            //if (b_flite1){  // toggle between two instances of flite speech module - hopefully to improve latency and performance
+            flite[numflite]->setLoop(true);
+            flite[numflite]->setText(name);
+            flite[numflite]->setLoop(false);
+            cout << "say flite " << numflite << endl;
+
+            if (numflite<NUMV-1){
+                numflite ++;
+                
+            } else {
+                numflite = 0;
+                //                flite1.setLoop(true);
+                //                flite1.setText(name); // add the name of the dying fly to text to say
+                //                flite1.setLoop(false);
+                //                b_flite1 = false;
+                
+            }
+
         }
-        
     }
 }
 
@@ -341,16 +372,18 @@ void ofApp::keyReleased(int key){
             break;
             
         case 'l':
-            //            //Open the Open File Dialog to load text file
-            //            ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a txt file");
-            //            //Check if the user opened a file
-            //            if (openFileResult.bSuccess){
-            //                ofLogVerbose("User selected a file");
-            //                //We have a file, check it and process it
-            //                processOpenFileSelection(openFileResult);
-            ////            } else {
-            ////                ofLogVerbose("User hit cancel");
-            //          }
+            //                        //Open the Open File Dialog to load text file
+            //            ofFileDialogResult openFileResult;
+            //            openFileResult= ofSystemLoadDialog("Select a txt file");
+            //
+            //                        //Check if the user opened a file
+            //                        if (openFileResult.bSuccess){
+            //                            ofLogVerbose("User selected a file");
+            //                            //We have a file, check it and process it
+            //                            processOpenFileSelection(openFileResult);
+            //            //            } else {
+            //            //                ofLogVerbose("User hit cancel");
+            //                      }
             break;
             
         case OF_KEY_LEFT:
@@ -553,9 +586,30 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
 //--------------------------------------------------------------
 // for ofxflite speech synthesis
 void ofApp::audioOut(float * outpt, int bufferSize, int nChannels){
-    float * audiosys = flite.processBuffer();
+//    vector<float *> audiosys;
+//    // float * audiosys1;
+//    for (int i=0; i<voices.size(); i++){
+//        audiosys[i] = voices[i].processBuffer();
+//    }
+//    for (int i = 0; i < bufferSize; i++){
+//        for (int x = 0; x < audiosys.size(); x++){
+//        outpt[i*nChannels    ] = audiosys[0][i];
+//        outpt[i*nChannels + 1] = audiosys[0][i];
+//        }
+//    }
+    float * audiosys[NUMV];
+    
     for (int i = 0; i < bufferSize; i++){
-        outpt[i*nChannels    ] = audiosys[i] ;
-        outpt[i*nChannels + 1] =  audiosys[i] ;
+        outpt[i*nChannels    ] = 0.0f ;
+        outpt[i*nChannels + 1] =  0.0f ;
+    }
+    
+    for(int k=0; k<NUMV;k++){
+        audiosys[k] = flite[k]->processBuffer();
+        
+        for (int i = 0; i < bufferSize; i++){
+            outpt[i*nChannels    ] += audiosys[k][i] ;
+            outpt[i*nChannels + 1] +=  audiosys[k][i] ;
+        }
     }
 }

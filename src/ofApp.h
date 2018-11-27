@@ -5,6 +5,9 @@
 #include "ofxFlite~.h"
 
 
+#define NUMV 15
+
+
 class dragonFly {
     
 public:
@@ -101,5 +104,7 @@ class ofApp : public ofBaseApp{
     void audioOut(float * outpt, int bufferSize, int nChannels);
 
     ofSoundStream sound;
+    
+   
     
 };
